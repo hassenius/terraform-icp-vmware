@@ -98,7 +98,7 @@ resource "vsphere_virtual_machine" "icpworker" {
 
 
 module "icpprovision" {
-    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy"
+    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy?ref=1.0.0"
     
     icp-master = ["${vsphere_virtual_machine.icpmaster.*.network_interface.0.ipv4_address}"]
     icp-proxy = ["${vsphere_virtual_machine.icpproxy.*.network_interface.0.ipv4_address}"]
