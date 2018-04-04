@@ -79,6 +79,11 @@ variable "staticipblock" {
   default     = ""
 }
 
+variable "staticipblock_offset" {
+  description = "Specify the starting offset of the staticipblock to begin assigning IP addresses from.  e.g. with staticipblock 172.16.0.0/16, offset of 10 will cause IP address assignment to begin at 172.16.0.11."
+  default     = 0
+}
+
 variable  "gateway" {
   description = "Default gateway for the newly provisioned VMs. Leave blank to use DHCP"
   default     = ""

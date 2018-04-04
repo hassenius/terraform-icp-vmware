@@ -1,24 +1,3 @@
-resource "null_resource" "mount_shared_disks" {
-  count = "${var.master["nodes"]}"
-
-  connection {
-    host          = "${element(vsphere_virtual_machine.icpmaster.*.default_ip_address, count.index)}"
-    user          = "${var.ssh_user}"
-    private_key   = "${file(var.ssh_keyfile)}"
-  }
-
-  # TODO: Ubuntu only
-  provisioner "remote-exec" {
-    inline = [
-      "sudo mkdir -p /var/lib/registry",
-      "sudo mkdir -p /var/lib/icp/audit",
-      "echo '${var.registry_mount_src} /var/lib/registry   ${var.registry_mount_type}  ${var.registry_mount_options}   0 0' | sudo tee -a /etc/fstab",
-      "echo '${var.audit_mount_src} /var/lib/icp/audit   ${var.audit_mount_type}  ${var.audit_mount_options}  0 0' | sudo tee -a /etc/fstab",
-      "sudo mount -a"
-    ]
-  }
-}
-
 ##################################
 ### Deploy ICP to cluster
 ##################################
