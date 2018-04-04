@@ -1,0 +1,2 @@
+#kubelet_extra_args:
+kibana_install: true
