@@ -121,6 +121,11 @@ resource "vsphere_virtual_machine" "icpmaster" {
   }
 
   provisioner "remote-exec" {
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+
     inline = [
       "sudo mkdir -p /var/lib/registry",
       "sudo mkdir -p /var/lib/icp/audit",
@@ -128,14 +133,6 @@ resource "vsphere_virtual_machine" "icpmaster" {
       "echo '${var.audit_mount_src} /var/lib/icp/audit   ${var.audit_mount_type}  ${var.audit_mount_options}  0 0' | sudo tee -a /etc/fstab",
       "sudo mount -a"
     ]
-  }
-}
-
-resource "null_resource" "create_local_vmdk" {
-  provisioner "local-exec" {
-    command = <<EOF
-echo "" > ${var.instance_name}-empty-disk.vmdk
-EOF
   }
 }
 
