@@ -74,7 +74,7 @@ This template provisions an HA cluster with ICP 2.1.0.2 enterprise edition.
 | resource_pool | yes         | Path of the Resource Pool to deploy VMs to (must be under the vSohere cluster), will be in the format like `<DC>/Resources/path/to/target` |
 | network_label | yes         | Network label to place all VMs on |
 | datastore | yes         | Name of the datastore to place all disk images in |
-| folder | yes         | Name of the VM folder to place all created VMs in |
+| folder | no         | Name of the VM folder to place all created VMs in, if not supplied will place in root folder |
 | template | yes         | Name of the VM template to use to create all VM images |
 | staticipblock | no           | Subnet to place all VMs in, in CIDR notation.  Ensure that the subnet has enough useable address for all created VMs.  For example, 192.168.0.0/24 will contain 256 addresses.   Leave blank to retrieve from DHCP. |
 | gateway | no           | default gateway to configure for all VMs.  Leave blank to retrieve from DHCP. |

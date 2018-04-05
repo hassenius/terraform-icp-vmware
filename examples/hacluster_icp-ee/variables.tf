@@ -61,7 +61,7 @@ variable "template" {
 
 variable "folder" {
   description = "Name of VM Folder to provision the new VMs in. The folder will be created"
-  default     = "ibmcloudprivate"
+  default     = ""
 }
 
 variable "instance_name" {
