@@ -3,7 +3,7 @@
 ####################################
 variable "vsphere_server" {
   description = "vsphere server to connect to"
-  default = "___INSERT YOUR OWN____"
+  default     = "___INSERT YOUR OWN____"
 }
 
 variable "vsphere_user" {
@@ -13,15 +13,13 @@ variable "vsphere_user" {
 
 variable "vsphere_password" {
   description = "Password to authenticate against vsphere"
-  default = "___INSERT YOUR OWN____"
+  default     = "___INSERT YOUR OWN____"
 }
 
 variable "allow_unverified_ssl" {
   description = "Allows terraform vsphere provider to communicate with vsphere servers with self signed certificates"
-  default = "true"
+  default     = "true"
 }
-
-
 
 ##############################################
 ##### vSphere deployment specifications ######
@@ -69,7 +67,7 @@ variable "instance_name" {
   default     = "icptest"
 }
 
-variable  "domain"  {
+variable "domain" {
   description = "Specify domain name to be used for linux customization on the VMs, or leave blank to use <instance_name>.icp"
   default     = ""
 }
@@ -84,7 +82,7 @@ variable "staticipblock_offset" {
   default     = 0
 }
 
-variable  "gateway" {
+variable "gateway" {
   description = "Default gateway for the newly provisioned VMs. Leave blank to use DHCP"
   default     = ""
 }
@@ -94,29 +92,29 @@ variable "netmask" {
   default     = ""
 }
 
-variable  "dns_servers" {
+variable "dns_servers" {
   description = "DNS Servers to configure on VMs"
-  default = ["8.8.8.8", "8.8.4.4"]
+  default     = ["8.8.8.8", "8.8.4.4"]
 }
 
 variable "cluster_vip" {
   description = "Virtual IP for Master Console"
-  default = ""
+  default     = ""
 }
 
 variable "proxy_vip" {
   description = "Virtual IP for Proxy Nodes"
-  default = ""
+  default     = ""
 }
 
 variable "cluster_vip_iface" {
   description = "Network Interface for Virtual IP for Master Console"
-  default = "eth0"
+  default     = "eth0"
 }
 
 variable "proxy_vip_iface" {
   description = "Network Interface for Virtual IP for Proxy Nodes"
-  default = "eth0"
+  default     = "eth0"
 }
 
 #################################
@@ -136,7 +134,7 @@ variable "master" {
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
 
-    start_iprange = ""            # Leave blank for DHCP, else masters will be allocated range starting from this address
+    start_iprange = "" # Leave blank for DHCP, else masters will be allocated range starting from this address
   }
 }
 
@@ -144,9 +142,9 @@ variable "proxy" {
   type = "map"
 
   default = {
-    nodes   = "3"
-    vcpu    = "1"
-    memory  = "2048"
+    nodes  = "3"
+    vcpu   = "1"
+    memory = "2048"
 
     disk_size           = ""      # Specify size or leave empty to use same size as template.
     docker_disk_size    = "100"   # Specify size for docker disk, default 100.
@@ -154,7 +152,7 @@ variable "proxy" {
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
 
-    start_iprange = ""            # Leave blank for DHCP, else proxies will be allocated range starting from this address
+    start_iprange = "" # Leave blank for DHCP, else proxies will be allocated range starting from this address
   }
 }
 
@@ -162,9 +160,9 @@ variable "worker" {
   type = "map"
 
   default = {
-    nodes       = "3"
-    vcpu        = "4"
-    memory      = "16384"
+    nodes  = "3"
+    vcpu   = "4"
+    memory = "16384"
 
     disk_size           = ""      # Specify size or leave empty to use same size as template.
     docker_disk_size    = "100"   # Specify size for docker disk, default 100.
@@ -172,7 +170,7 @@ variable "worker" {
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
 
-    start_iprange = ""            # Leave blank for DHCP, else workers will be allocated range starting from this address
+    start_iprange = "" # Leave blank for DHCP, else workers will be allocated range starting from this address
   }
 }
 
@@ -180,9 +178,9 @@ variable "management" {
   type = "map"
 
   default = {
-    nodes       = "3"
-    vcpu        = "4"
-    memory      = "8192"
+    nodes  = "3"
+    vcpu   = "4"
+    memory = "8192"
 
     disk_size           = ""      # Specify size or leave empty to use same size as template.
     docker_disk_size    = "100"   # Specify size for docker disk, default 100.
@@ -190,38 +188,38 @@ variable "management" {
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
 
-    start_iprange = ""            # Leave blank for DHCP, else workers will be allocated range starting from this address
+    start_iprange = "" # Leave blank for DHCP, else workers will be allocated range starting from this address
   }
 }
 
 variable "registry_mount_src" {
   description = "Mount point containing the shared registry directory for /var/lib/registry"
-  default = ""
+  default     = ""
 }
 
 variable "registry_mount_type" {
   description = "Mount Type of registry shared storage filesystem"
-  default = "nfs"
+  default     = "nfs"
 }
 
 variable "registry_mount_options" {
   description = "Additional mount options for registry shared directory"
-  default = "defaults"
+  default     = "defaults"
 }
 
 variable "audit_mount_src" {
   description = "Mount point containing the shared registry directory for /var/lib/icp/audit"
-  default = ""
+  default     = ""
 }
 
 variable "audit_mount_type" {
   description = "Mount Type of registry shared storage filesystem"
-  default = "nfs"
+  default     = "nfs"
 }
 
 variable "audit_mount_options" {
   description = "Additional mount options for audit shared directory"
-  default = "defaults"
+  default     = "defaults"
 }
 
 variable "icppassword" {
