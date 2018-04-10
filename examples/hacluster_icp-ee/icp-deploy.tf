@@ -2,7 +2,8 @@
 ### Deploy ICP to cluster
 ##################################
 module "icpprovision" {
-    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.1.0"
+    #source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.1.0"
+    source = "github.com/jkwong888/terraform-module-icp-deploy.git?ref=airgapped"
 
     # Provide IP addresses for master, proxy and workers
     icp-master = ["${vsphere_virtual_machine.icpmaster.*.default_ip_address}"]
@@ -32,10 +33,9 @@ module "icpprovision" {
       "proxy_vip"                       = "${var.proxy_vip}"
       "vip_iface"                       = "${var.cluster_vip_iface}"
       "proxy_vip_iface"                 = "${var.proxy_vip_iface}"
+      #"vip_manager"                     = "etcd"
       "cluster_name"                    = "${var.instance_name}-cluster"
-      "vip_manager"                     = "etcd"
       "calico_ip_autodetection_method"  = "first-found"
-
       "default_admin_password"          = "${var.icppassword}"
     }
 

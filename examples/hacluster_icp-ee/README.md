@@ -47,11 +47,28 @@ This template provisions an HA cluster with ICP 2.1.0.2 enterprise edition.
    sudo lvs
    ```
 
+   Ensure that the user we pass as `sshuser` is in the docker group:
+
+   ```bash
+   gpasswd -a <sshuser> docker
+   ```
+
+   Ensure that docker is autostarted:
+
+   ```bash
+   sudo systemctl enable docker
+   ```
+
 1. Install any other needed packages:
    1. Shared storage clients, e.g. if the shared storage is NFS for the registry and audit directories, install NFS clients.
+   1. In airgapped environments, the terraform automation requires and attempts to install `PyYAML`.  You can pre-install it into the template:
+      - `yum install PyYAML` on RHEL
+      - `apt install python-yaml` on Ubuntu
    1. Install VMware Tools or `open-vm-tools`
+   1. For RHEL templates, VMware guest customization requires `perl`.
+   1. For RHEL templates, either disable the firewall (`systemctl disable firewalld`), or add `firewall_enabled: true` to `icp-config.yaml`.
 
-1. Pre-load the docker images from the ICP package you wish to install.
+1. (optional) If you are not providing `image_location`, pre-load the docker images from the ICP package you wish to install.
 
    ```bash
    tar xf ibm-cloud-private-x86_64-2.1.0.2.tar.gz -O | sudo docker load
@@ -72,8 +89,8 @@ This template provisions an HA cluster with ICP 2.1.0.2 enterprise edition.
 | vsphere_password     | yes          | Password for vSphere user     |
 | allow_unverified_ssl   | no           | SSL certificate verification when connecting to vSphere, `true` by default. |
 | vsphere_datacenter | yes         | Name of the vSphere datacenter to deploy VMs to |
-| cluster | yes         | Name of the vSphere cluster to deploy VMs to (must be under the vSohere datacenter) |
-| resource_pool | yes         | Path of the Resource Pool to deploy VMs to (must be under the vSohere cluster), will be in the format like `<DC>/Resources/path/to/target` |
+| vsphere_cluster | yes         | Name of the vSphere cluster to deploy VMs to (must be under the vSphere datacenter) |
+| vsphere_resource_pool | no         | Path of the Resource Pool to deploy VMs to (must be under the vSphere cluster), will be in the format like `/path/to/target`, by default will add VMs to root resource pool in the cluster |
 | network_label | yes         | Network label to place all VMs on |
 | datastore | yes         | Name of the datastore to place all disk images in |
 | folder | no         | Name of the VM folder to create where all created VMs are placed in, if not supplied will place in root folder |

@@ -1,2 +1,5 @@
 #kubelet_extra_args:
 kibana_install: true
+docker_extra_args:
+- --storage-driver=devicemapper
+- --dm.directlvm_device=""/dev/sdb"

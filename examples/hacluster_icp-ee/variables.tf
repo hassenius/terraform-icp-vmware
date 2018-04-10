@@ -30,14 +30,14 @@ variable "vsphere_datacenter" {
   default     = "___INSERT YOUR OWN____"
 }
 
-variable "cluster" {
+variable "vsphere_cluster" {
   description = "Name of vsphere cluster to deploy to"
   default     = "___INSERT YOUR OWN____"
 }
 
-variable "resource_pool" {
-  description = "Path of resource pool to deploy to. i.e. <DC>/Resources/<pool name>"
-  default     = "___INSERT YOUR OWN____"
+variable "vsphere_resource_pool" {
+  description = "Path of resource pool to deploy to. i.e. /path/to/pool"
+  default     = "/"
 }
 
 variable "network_label" {
@@ -124,7 +124,7 @@ variable "master" {
   type = "map"
 
   default = {
-    nodes  = "1"
+    nodes  = "3"
     vcpu   = "4"
     memory = "16384"
 
