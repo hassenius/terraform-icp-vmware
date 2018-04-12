@@ -192,6 +192,24 @@ variable "management" {
   }
 }
 
+variable "va" {
+  type = "map"
+
+  default = {
+    nodes  = "3"
+    vcpu   = "4"
+    memory = "8192"
+
+    disk_size           = ""      # Specify size or leave empty to use same size as template.
+    docker_disk_size    = "100"   # Specify size for docker disk, default 100.
+    thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
+    eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
+    keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
+
+    start_iprange = "" # Leave blank for DHCP, else workers will be allocated range starting from this address
+  }
+}
+
 variable "registry_mount_src" {
   description = "Mount point containing the shared registry directory for /var/lib/registry"
   default     = ""

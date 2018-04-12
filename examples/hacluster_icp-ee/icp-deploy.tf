@@ -6,10 +6,14 @@ module "icpprovision" {
     source = "github.com/jkwong888/terraform-module-icp-deploy.git?ref=airgapped"
 
     # Provide IP addresses for master, proxy and workers
-    icp-master = ["${vsphere_virtual_machine.icpmaster.*.default_ip_address}"]
-    icp-proxy = ["${vsphere_virtual_machine.icpproxy.*.default_ip_address}"]
-    icp-worker = ["${vsphere_virtual_machine.icpworker.*.default_ip_address}"]
-    icp-management = ["${vsphere_virtual_machine.icpmanagement.*.default_ip_address}"]
+    boot-node = "${vsphere_virtual_machine.icpmaster.0.default_ip_address}"
+    icp-host-groups = {
+        master = ["${vsphere_virtual_machine.icpmaster.*.default_ip_address}"]
+        proxy = ["${vsphere_virtual_machine.icpproxy.*.default_ip_address}"]
+        worker = ["${vsphere_virtual_machine.icpworker.*.default_ip_address}"]
+        management = ["${vsphere_virtual_machine.icpmanagement.*.default_ip_address}"]
+        va = ["${vsphere_virtual_machine.icpva.*.default_ip_address}"]
+    }
 
     # Provide desired ICP version to provision
     icp-version = "${var.icp_inception_image}"
@@ -18,7 +22,11 @@ module "icpprovision" {
 
     /* Workaround for terraform issue #10857
      When this is fixed, we can work this out autmatically */
-    cluster_size  = "${var.master["nodes"] + var.worker["nodes"] + var.proxy["nodes"] + var.management["nodes"]}"
+    cluster_size  = "${var.master["nodes"] +
+        var.worker["nodes"] +
+        var.proxy["nodes"] +
+        var.management["nodes"] +
+        var.va["nodes"]}"
 
     ###################################################################################################################################
     ## You can feed in arbitrary configuration items in the icp_configuration map.
@@ -37,6 +45,8 @@ module "icpprovision" {
       "cluster_name"                    = "${var.instance_name}-cluster"
       "calico_ip_autodetection_method"  = "first-found"
       "default_admin_password"          = "${var.icppassword}"
+      "disabled_management_services"    = [ "${var.va["nodes"] == 0 ? "va" : "" }" ]
+
     }
 
     # We will let terraform generate a new ssh keypair

@@ -284,6 +284,73 @@ resource "vsphere_virtual_machine" "icpmanagement" {
   }
 }
 
+resource "vsphere_virtual_machine" "icpva" {
+  #depends_on = ["vsphere_folder.icpenv"]
+  folder     = "${local.folder_path}"
+
+  #####
+  # VM Specifications
+  ####
+  count            = "${var.va["nodes"]}"
+  resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
+
+  name      = "${format("${lower(var.instance_name)}-va%02d", count.index + 1) }"
+  num_cpus  = "${var.va["vcpu"]}"
+  memory    = "${var.va["memory"]}"
+
+  ####
+  # Disk specifications
+  ####
+  datastore_id  = "${data.vsphere_datastore.datastore.id}"
+  guest_id      = "${data.vsphere_virtual_machine.template.guest_id}"
+  scsi_type     = "${data.vsphere_virtual_machine.template.scsi_type}"
+
+  disk {
+    label            = "${format("${lower(var.instance_name)}-va%02d.vmdk", count.index + 1) }"
+    size             = "${var.va["disk_size"]        != "" ? var.va["disk_size"]        : data.vsphere_virtual_machine.template.disks.0.size}"
+    eagerly_scrub    = "${var.va["eagerly_scrub"]    != "" ? var.va["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${var.va["thin_provisioned"] != "" ? var.va["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
+    keep_on_remove   = "${var.va["keep_disk_on_remove"]}"
+  }
+
+  disk {
+    label            = "${format("${lower(var.instance_name)}-va%02d_docker.vmdk", count.index + 1) }"
+    size             = "${var.va["docker_disk_size"] != "" ? var.va["docker_disk_size"] : data.vsphere_virtual_machine.template.disks.0.size}"
+    eagerly_scrub    = "${var.va["eagerly_scrub"]    != "" ? var.va["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${var.va["thin_provisioned"] != "" ? var.va["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
+    keep_on_remove   = "${var.va["keep_disk_on_remove"]}"
+    unit_number      = 1
+  }
+
+  ####
+  # Network specifications
+  ####
+  network_interface {
+    network_id   = "${data.vsphere_network.network.id}"
+    adapter_type = "${data.vsphere_virtual_machine.template.network_interface_types[0]}"
+  }
+
+  ####
+  # VM Customizations
+  ####
+  clone {
+    template_uuid = "${data.vsphere_virtual_machine.template.id}"
+
+    customize {
+      linux_options {
+        host_name = "${format("${lower(var.instance_name)}-va%02d", count.index + 1) }"
+        domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
+      }
+      network_interface {
+        ipv4_address  = "${var.staticipblock != "" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + count.index) : ""}"
+        ipv4_netmask  = "${var.netmask}"
+      }
+      ipv4_gateway    = "${var.gateway}"
+      dns_server_list = "${var.dns_servers}"
+    }
+  }
+}
+
 ##################################
 ### Create the Worker VMs
 ##################################
@@ -348,7 +415,7 @@ resource "vsphere_virtual_machine" "icpworker" {
       }
 
       network_interface {
-        ipv4_address  = "${var.staticipblock != "" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + count.index) : ""}"
+        ipv4_address  = "${var.staticipblock != "" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + var.va["nodes"] + count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
 
