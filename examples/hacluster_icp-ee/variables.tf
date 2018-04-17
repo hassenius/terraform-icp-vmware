@@ -73,8 +73,8 @@ variable "domain" {
 }
 
 variable "staticipblock" {
-  description = "Specify start unused static ip cidr block to assign IP addresses to the cluster, e.g. 172.16.0.0/16.  Leave blank for DHCP."
-  default     = ""
+  description = "Specify start unused static ip cidr block to assign IP addresses to the cluster, e.g. 172.16.0.0/16.  Set to 0.0.0.0/0 for DHCP."
+  default     = "0.0.0.0/0"
 }
 
 variable "staticipblock_offset" {
@@ -88,8 +88,8 @@ variable "gateway" {
 }
 
 variable "netmask" {
-  description = "Netmask in CIDR notation when using static IPs. For example 16 or 24. Leave blank for DHCP"
-  default     = ""
+  description = "Netmask in CIDR notation when using static IPs. For example 16 or 24. Set to 0 to retrieve from DHCP"
+  default     = 0
 }
 
 variable "dns_servers" {
@@ -107,14 +107,24 @@ variable "proxy_vip" {
   default     = ""
 }
 
+variable "cluster_lb_address" {
+  description = "External LoadBalancer address for Master Console"
+  default     = ""
+}
+
+variable "proxy_lb_address" {
+  description = "External Load Balancer address for Proxy Node"
+  default     = ""
+}
+
 variable "cluster_vip_iface" {
   description = "Network Interface for Virtual IP for Master Console"
-  default     = "eth0"
+  default     = ""
 }
 
 variable "proxy_vip_iface" {
   description = "Network Interface for Virtual IP for Proxy Nodes"
-  default     = "eth0"
+  default     = ""
 }
 
 #################################
@@ -184,6 +194,7 @@ variable "management" {
 
     disk_size           = ""      # Specify size or leave empty to use same size as template.
     docker_disk_size    = "100"   # Specify size for docker disk, default 100.
+    log_disk_size       = "50"    # Specify size for /opt/ibm/cfc for log storage, default 50
     thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
@@ -202,12 +213,29 @@ variable "va" {
 
     disk_size           = ""      # Specify size or leave empty to use same size as template.
     docker_disk_size    = "100"   # Specify size for docker disk, default 100.
+    es_disk_size        = "50"     # Specify size for /var/lib/icp for elasticsearch data storage, default 50
     thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
 
     start_iprange = "" # Leave blank for DHCP, else workers will be allocated range starting from this address
   }
+}
+
+
+variable "docker_package_location" {
+  description = "URI for docker package location, e.g. http://<myhost>/icp-docker-17.09_x86_64.bin or nfs://<myhost>/icp-docker-17.09_x86_64.bin"
+  default     = ""
+}
+
+variable "image_location" {
+  description = "URI for image package location, e.g. http://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz or nfs://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz"
+  default     = ""
+}
+
+variable "image_repo" {
+  description = "Registry prefix to install all ICP images from"
+  default     = ""
 }
 
 variable "registry_mount_src" {

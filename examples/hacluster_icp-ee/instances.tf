@@ -120,7 +120,7 @@ resource "vsphere_virtual_machine" "icpmaster" {
         domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
       }
       network_interface {
-        ipv4_address  = "${var.staticipblock != "" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + count.index) : ""}"
+        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
 
@@ -207,7 +207,7 @@ resource "vsphere_virtual_machine" "icpproxy" {
         domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
       }
       network_interface {
-        ipv4_address  = "${var.staticipblock != "" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + count.index) : ""}"
+        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
 
@@ -255,6 +255,15 @@ resource "vsphere_virtual_machine" "icpmanagement" {
     unit_number      = 1
   }
 
+  disk {
+    label            = "${format("${lower(var.instance_name)}-management%02d_log.vmdk", count.index + 1) }"
+    size             = "${var.management["log_disk_size"]}"
+    eagerly_scrub    = "${var.management["eagerly_scrub"]    != "" ? var.management["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${var.management["thin_provisioned"] != "" ? var.management["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
+    keep_on_remove   = "${var.management["keep_disk_on_remove"]}"
+    unit_number      = 2
+  }
+
   ####
   # Network specifications
   ####
@@ -275,12 +284,27 @@ resource "vsphere_virtual_machine" "icpmanagement" {
         domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
       }
       network_interface {
-        ipv4_address  = "${var.staticipblock != "" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + count.index) : ""}"
+        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
       ipv4_gateway    = "${var.gateway}"
       dns_server_list = "${var.dns_servers}"
     }
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+
+    inline = [
+      "sudo mkdir -p /opt/ibm/cfc",
+      "sudo parted -s -a optimal /dev/sdc mklabel gpt -- mkpart primary ext4 1 -1",
+      "sudo mkfs.ext4 /dev/sdc1",
+      "echo '/dev/sdc1 /opt/ibm/cfc   ext4  defaults   0 0' | sudo tee -a /etc/fstab",
+      "sudo mount -a"
+    ]
   }
 }
 
@@ -322,6 +346,15 @@ resource "vsphere_virtual_machine" "icpva" {
     unit_number      = 1
   }
 
+  disk {
+    label            = "${format("${lower(var.instance_name)}-va%02d_es.vmdk", count.index + 1) }"
+    size             = "${var.va["es_disk_size"]}"
+    eagerly_scrub    = "${var.va["eagerly_scrub"]    != "" ? var.va["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${var.va["thin_provisioned"] != "" ? var.va["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
+    keep_on_remove   = "${var.va["keep_disk_on_remove"]}"
+    unit_number      = 2
+  }
+
   ####
   # Network specifications
   ####
@@ -342,12 +375,27 @@ resource "vsphere_virtual_machine" "icpva" {
         domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
       }
       network_interface {
-        ipv4_address  = "${var.staticipblock != "" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + count.index) : ""}"
+        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
       ipv4_gateway    = "${var.gateway}"
       dns_server_list = "${var.dns_servers}"
     }
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+
+    inline = [
+      "sudo mkdir -p /var/lib/icp",
+      "sudo parted -s -a optimal /dev/sdc mklabel gpt -- mkpart primary ext4 1 -1",
+      "sudo mkfs.ext4 /dev/sdc1",
+      "echo '/dev/sdc1 /var/lib/icp   ext4  defaults   0 0' | sudo tee -a /etc/fstab",
+      "sudo mount -a"
+    ]
   }
 }
 
@@ -415,7 +463,7 @@ resource "vsphere_virtual_machine" "icpworker" {
       }
 
       network_interface {
-        ipv4_address  = "${var.staticipblock != "" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + var.va["nodes"] + count.index) : ""}"
+        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + var.va["nodes"] + count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
 
