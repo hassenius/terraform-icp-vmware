@@ -101,8 +101,8 @@ This template provisions an HA cluster with ICP 2.1.0.2 enterprise edition.
 | `dns_servers` | no | List of DNS servers to configure in the VMs.  By default, uses Google public DNS (`8.8.8.8` and `8.8.4.4`).  Set to blank to retrieve from DHCP. |
 | `ssh_user` | no | User that terraform will SSH as, should have passwordless sudo access, will use `root` by default. |
 | `ssh_keyfile` | no | private key file to use for SSH access, assumes `~/.ssh/id_rsa` by default |
-| `docker_package_location` | no | location of ICP docker package,  e.g. `http://<myhost>/icp-docker-17.09_x86_64.bin` or `nfs://<myhost>/icp-docker-17.09_x86_64.bin` |
-| `image_location` | no | location of ICP binary package,  e.g. `http://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz` or `nfs://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz` |
+| `docker_package_location` | no | location of ICP docker package,  e.g. `http://<myhost>/icp-docker-17.09_x86_64.bin` or `nfs:<myhost>/icp-docker-17.09_x86_64.bin` |
+| `image_location` | no | location of ICP binary package,  e.g. `http://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz` or `nfs:<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz` |
 | `icp_inception_image` | no | Name of the `icp-inception` image to use.  Uses `ibmcom/icp-inception:2.1.0.2-ee` by default. |
 | `proxy_vip` | no | Virtual IP address for the Proxy Nodes. One of `proxy_vip` or `proxy_lb_address` must be set for HA. |
 | `proxy_vip_iface` | no | Network interface to use for the Proxy Node virtual IP.  Must be set if `proxy_vip` is set. |

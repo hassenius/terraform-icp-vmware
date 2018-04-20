@@ -224,12 +224,12 @@ variable "va" {
 
 
 variable "docker_package_location" {
-  description = "URI for docker package location, e.g. http://<myhost>/icp-docker-17.09_x86_64.bin or nfs://<myhost>/icp-docker-17.09_x86_64.bin"
+  description = "URI for docker package location, e.g. http://<myhost>/icp-docker-17.09_x86_64.bin or nfs:<myhost>/icp-docker-17.09_x86_64.bin"
   default     = ""
 }
 
 variable "image_location" {
-  description = "URI for image package location, e.g. http://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz or nfs://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz"
+  description = "URI for image package location, e.g. http://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz or nfs:<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz"
   default     = ""
 }
 
