@@ -235,7 +235,7 @@ variable "image_location" {
 
 variable "image_repo" {
   description = "Registry prefix to install all ICP images from"
-  default     = ""
+  default     = "ibmcom"
 }
 
 variable "registry_mount_src" {
