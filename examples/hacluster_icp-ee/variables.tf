@@ -99,32 +99,32 @@ variable "dns_servers" {
 
 variable "cluster_vip" {
   description = "Virtual IP for Master Console"
-  default     = ""
+  default     = "127.0.1.1"
 }
 
 variable "proxy_vip" {
   description = "Virtual IP for Proxy Nodes"
-  default     = ""
+  default     = "127.0.1.1"
 }
 
 variable "cluster_lb_address" {
   description = "External LoadBalancer address for Master Console"
-  default     = ""
+  default     = "none"
 }
 
 variable "proxy_lb_address" {
   description = "External Load Balancer address for Proxy Node"
-  default     = ""
+  default     = "none"
 }
 
 variable "cluster_vip_iface" {
   description = "Network Interface for Virtual IP for Master Console"
-  default     = ""
+  default     = "eth0"
 }
 
 variable "proxy_vip_iface" {
   description = "Network Interface for Virtual IP for Proxy Nodes"
-  default     = ""
+  default     = "eth0"
 }
 
 #################################
