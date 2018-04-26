@@ -2,7 +2,7 @@
 ### Deploy ICP to cluster
 ##################################
 module "icpprovision" {
-    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.2.0"
+    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.2.1"
 
     # Provide IP addresses for master, proxy and workers
     boot-node = "${vsphere_virtual_machine.icpmaster.0.default_ip_address}"
@@ -17,7 +17,6 @@ module "icpprovision" {
     # Provide desired ICP version to provision
     icp-version = "${var.icp_inception_image}"
     image_location = "${var.image_location}"
-    docker_package_location = "${var.docker_package_location}"
 
     parallell-image-pull = true
 
@@ -34,8 +33,8 @@ module "icpprovision" {
     ## Available configuration items availble from https://www.ibm.com/support/knowledgecenter/SSBS6K_2.1.0/installing/config_yaml.html
     icp_config_file = "./icp-config.yaml"
     icp_configuration = {
-      "network_cidr"                    = "192.168.0.0/16"
-      "service_cluster_ip_range"        = "10.10.10.0/24"
+      "network_cidr"                    = "${var.network_cidr}"
+      "service_cluster_ip_range"        = "${var.service_network_cidr}"
       "cluster_access_ip"               = "${var.cluster_vip}"
       "proxy_access_ip"                 = "${var.proxy_vip}"
       "cluster_vip"                     = "${var.cluster_vip}"

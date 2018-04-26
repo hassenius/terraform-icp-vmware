@@ -47,7 +47,7 @@ variable "network_label" {
 
 variable "datastore" {
   description = "Name of datastore to use for the VMs"
-  default     = "___INSERT YOUR OWN____"
+  default     = ""
 }
 
 ## Note
@@ -140,6 +140,7 @@ variable "master" {
 
     disk_size           = ""      # Specify size or leave empty to use same size as template.
     docker_disk_size    = "100"   # Specify size for docker disk, default 100.
+    datastore_disk_size = "50"    # Specify size datastore directory, default 50.
     thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
@@ -286,4 +287,16 @@ variable "ssh_keyfile" {
 variable "icp_inception_image" {
   description = "ICP image to use for installation"
   default     = "ibmcom/icp-inception:2.1.0.2-ee"
+}
+
+
+variable "network_cidr" {
+  description = "Pod network CIDR "
+  default     = "192.168.0.0/16"
+}
+
+
+variable "service_network_cidr" {
+  description = "Service network CIDR "
+  default     = "10.10.10.0/24"
 }

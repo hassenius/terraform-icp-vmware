@@ -1,4 +1,4 @@
-##################################
+#################################
 # Configure the VMware vSphere Provider
 ##################################
 provider "vsphere" {
@@ -23,6 +23,7 @@ data "vsphere_datastore" "datastore" {
   name          = "${var.datastore}"
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
+
 
 data "vsphere_resource_pool" "pool" {
   name          = "${var.vsphere_cluster}/Resources/${var.vsphere_resource_pool}"
@@ -83,7 +84,7 @@ resource "vsphere_virtual_machine" "icpmaster" {
   scsi_type     = "${data.vsphere_virtual_machine.template.scsi_type}"
 
   disk {
-    label            = "disk0"
+    label            = "${format("${lower(var.instance_name)}-master%02d.vmdk", count.index + 1) }"
     size             = "${var.master["disk_size"]        != "" ? var.master["disk_size"]        : data.vsphere_virtual_machine.template.disks.0.size}"
     eagerly_scrub    = "${var.master["eagerly_scrub"]    != "" ? var.master["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
     thin_provisioned = "${var.master["thin_provisioned"] != "" ? var.master["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
@@ -92,12 +93,22 @@ resource "vsphere_virtual_machine" "icpmaster" {
   }
 
   disk {
-    label            = "disk1"
-    size             = "${var.master["docker_disk_size"] != "" ? var.master["docker_disk_size"] : data.vsphere_virtual_machine.template.disks.1.size }"
-    eagerly_scrub    = "${var.master["eagerly_scrub"]    != "" ? var.master["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.1.eagerly_scrub}"
-    thin_provisioned = "${var.master["thin_provisioned"] != "" ? var.master["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.1.thin_provisioned}"
+    label            = "${format("${lower(var.instance_name)}-master%02d_docker.vmdk", count.index + 1) }"
+    size             = "${var.master["docker_disk_size"]}"
+    eagerly_scrub    = "${var.master["eagerly_scrub"]    != "" ? var.master["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${var.master["thin_provisioned"] != "" ? var.master["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
     keep_on_remove   = "${var.master["keep_disk_on_remove"]}"
     unit_number      = 1
+  }
+
+
+  disk {
+    label            = "${format("${lower(var.instance_name)}-master%02d_db.vmdk", count.index + 1) }"
+    size             = "${var.master["datastore_disk_size"]}"
+    eagerly_scrub    = "${var.master["eagerly_scrub"]    != "" ? var.master["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${var.master["thin_provisioned"] != "" ? var.master["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
+    keep_on_remove   = "${var.master["keep_disk_on_remove"]}"
+    unit_number      = 2
   }
 
   ####
@@ -129,6 +140,16 @@ resource "vsphere_virtual_machine" "icpmaster" {
     }
   }
 
+  provisioner "file" {
+    source      = "${path.module}/scripts"
+    destination = "/tmp/terraform_scripts"
+
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+  }
+
   provisioner "remote-exec" {
     connection {
       user          = "${var.ssh_user}"
@@ -136,6 +157,9 @@ resource "vsphere_virtual_machine" "icpmaster" {
     }
 
     inline = [
+      "chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}",
+      "/tmp/terraform_scripts/create-part.sh -p /opt/ibm/cfc -d /dev/sdc",
       "sudo mkdir -p /var/lib/registry",
       "sudo mkdir -p /var/lib/icp/audit",
       "echo '${var.registry_mount_src} /var/lib/registry   ${var.registry_mount_type}  ${var.registry_mount_options}   0 0' | sudo tee -a /etc/fstab",
@@ -180,9 +204,9 @@ resource "vsphere_virtual_machine" "icpproxy" {
 
   disk {
     label            = "${format("${lower(var.instance_name)}-proxy%02d_docker.vmdk", count.index + 1) }"
-    size             = "${var.proxy["docker_disk_size"] != "" ? var.proxy["docker_disk_size"] : data.vsphere_virtual_machine.template.disks.1.size}"
-    eagerly_scrub    = "${var.proxy["eagerly_scrub"]    != "" ? var.proxy["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.1.eagerly_scrub}"
-    thin_provisioned = "${var.proxy["thin_provisioned"] != "" ? var.proxy["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.1.thin_provisioned}"
+    size             = "${var.proxy["docker_disk_size"]}"
+    eagerly_scrub    = "${var.proxy["eagerly_scrub"]    != "" ? var.proxy["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${var.proxy["thin_provisioned"] != "" ? var.proxy["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
     keep_on_remove   = "${var.proxy["keep_disk_on_remove"]}"
     unit_number      = 1
   }
@@ -214,6 +238,28 @@ resource "vsphere_virtual_machine" "icpproxy" {
       ipv4_gateway    = "${var.gateway}"
       dns_server_list = "${var.dns_servers}"
     }
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/scripts"
+    destination = "/tmp/terraform_scripts"
+
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+
+    inline = [
+      "chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}"
+    ]
   }
 }
 
@@ -248,7 +294,7 @@ resource "vsphere_virtual_machine" "icpmanagement" {
 
   disk {
     label            = "${format("${lower(var.instance_name)}-management%02d_docker.vmdk", count.index + 1) }"
-    size             = "${var.management["docker_disk_size"] != "" ? var.management["docker_disk_size"] : data.vsphere_virtual_machine.template.disks.0.size}"
+    size             = "${var.management["docker_disk_size"]}"
     eagerly_scrub    = "${var.management["eagerly_scrub"]    != "" ? var.management["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
     thin_provisioned = "${var.management["thin_provisioned"] != "" ? var.management["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
     keep_on_remove   = "${var.management["keep_disk_on_remove"]}"
@@ -292,6 +338,16 @@ resource "vsphere_virtual_machine" "icpmanagement" {
     }
   }
 
+  provisioner "file" {
+    source      = "${path.module}/scripts"
+    destination = "/tmp/terraform_scripts"
+
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+  }
+
   provisioner "remote-exec" {
     connection {
       user          = "${var.ssh_user}"
@@ -299,11 +355,9 @@ resource "vsphere_virtual_machine" "icpmanagement" {
     }
 
     inline = [
-      "sudo mkdir -p /opt/ibm/cfc",
-      "sudo parted -s -a optimal /dev/sdc mklabel gpt -- mkpart primary ext4 1 -1",
-      "sudo mkfs.ext4 /dev/sdc1",
-      "echo '/dev/sdc1 /opt/ibm/cfc   ext4  defaults   0 0' | sudo tee -a /etc/fstab",
-      "sudo mount -a"
+      "chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}",
+      "/tmp/terraform_scripts/create-part.sh -p /opt/ibm/cfc -d /dev/sdc"
     ]
   }
 }
@@ -325,9 +379,9 @@ resource "vsphere_virtual_machine" "icpva" {
   ####
   # Disk specifications
   ####
-  datastore_id  = "${data.vsphere_datastore.datastore.id}"
-  guest_id      = "${data.vsphere_virtual_machine.template.guest_id}"
-  scsi_type     = "${data.vsphere_virtual_machine.template.scsi_type}"
+  datastore_id      = "${data.vsphere_datastore.datastore.id}"
+  guest_id          = "${data.vsphere_virtual_machine.template.guest_id}"
+  scsi_type         = "${data.vsphere_virtual_machine.template.scsi_type}"
 
   disk {
     label            = "${format("${lower(var.instance_name)}-va%02d.vmdk", count.index + 1) }"
@@ -339,7 +393,7 @@ resource "vsphere_virtual_machine" "icpva" {
 
   disk {
     label            = "${format("${lower(var.instance_name)}-va%02d_docker.vmdk", count.index + 1) }"
-    size             = "${var.va["docker_disk_size"] != "" ? var.va["docker_disk_size"] : data.vsphere_virtual_machine.template.disks.0.size}"
+    size             = "${var.va["docker_disk_size"]}"
     eagerly_scrub    = "${var.va["eagerly_scrub"]    != "" ? var.va["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
     thin_provisioned = "${var.va["thin_provisioned"] != "" ? var.va["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
     keep_on_remove   = "${var.va["keep_disk_on_remove"]}"
@@ -383,6 +437,16 @@ resource "vsphere_virtual_machine" "icpva" {
     }
   }
 
+  provisioner "file" {
+    source      = "${path.module}/scripts"
+    destination = "/tmp/terraform_scripts"
+
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+  }
+
   provisioner "remote-exec" {
     connection {
       user          = "${var.ssh_user}"
@@ -390,11 +454,9 @@ resource "vsphere_virtual_machine" "icpva" {
     }
 
     inline = [
-      "sudo mkdir -p /var/lib/icp",
-      "sudo parted -s -a optimal /dev/sdc mklabel gpt -- mkpart primary ext4 1 -1",
-      "sudo mkfs.ext4 /dev/sdc1",
-      "echo '/dev/sdc1 /var/lib/icp   ext4  defaults   0 0' | sudo tee -a /etc/fstab",
-      "sudo mount -a"
+      "chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}",
+      "/tmp/terraform_scripts/create-part.sh -p /var/lib/icp -d /dev/sdc"
     ]
   }
 }
@@ -434,7 +496,7 @@ resource "vsphere_virtual_machine" "icpworker" {
 
   disk {
     label            = "${format("${lower(var.instance_name)}-worker%02d_docker.vmdk", count.index + 1) }"
-    size             = "${var.worker["docker_disk_size"] != "" ? var.worker["docker_disk_size"] : data.vsphere_virtual_machine.template.disks.0.size}"
+    size             = "${var.worker["docker_disk_size"]}"
     eagerly_scrub    = "${var.worker["eagerly_scrub"]    != "" ? var.worker["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
     thin_provisioned = "${var.worker["thin_provisioned"] != "" ? var.worker["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
     keep_on_remove   = "${var.worker["keep_disk_on_remove"]}"
@@ -470,5 +532,27 @@ resource "vsphere_virtual_machine" "icpworker" {
       ipv4_gateway    = "${var.gateway}"
       dns_server_list = "${var.dns_servers}"
     }
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/scripts"
+    destination = "/tmp/terraform_scripts"
+
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      user          = "${var.ssh_user}"
+      private_key   = "${file(var.ssh_keyfile)}"
+    }
+
+    inline = [
+      "chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}"
+    ]
   }
 }
