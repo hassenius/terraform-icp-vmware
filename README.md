@@ -52,9 +52,11 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 
 1. git clone or download the templates
 
-1. Create a `terraform.tfvars` file to reflect your environment.  Please see [variables.tf](variables.tf) for variable names and descriptions.   Here are some important variables:
+1. Create a `terraform.tfvars` file to reflect your environment.  Please see [variables.tf](variables.tf) for variable names and descriptions.   
 
-** vSphere variables **
+### Terraform confiruation
+
+#### vSphere variables
 
 | name | required                        | value        |
 |----------------|------------|--------------|
@@ -70,12 +72,12 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 | `folder` | no         | Name of the VM folder to create where all created VMs are placed in, if not supplied, will place in root folder. |
 | `template` | yes         | Name of the VM template to use to create all VM images |
 
-** Network variables **
+#### Network variables
 
-Although the template defaults configure the cluster using DHCP addresses, it is strongly recommended to configure values for each of these variables so that the cluster is configured using static IP addresses.
+*Although the template defaults configure the cluster using DHCP addresses, it is strongly recommended to configure values for each of these variables so that the cluster is configured using static IP addresses.*
 
 | name |  value                                  |
-|----------------|------------|------------------|
+|------------|------------------|
 | `staticipblock` |  Subnet to place all VMs in, in CIDR notation.  Ensure that the subnet has enough useable address for all created VMs.  For example, 192.168.0.0/24 will contain 256 addresses.  It is recommended to set this variable so that the cluster is configured with static IP addresses. The default is set to `0.0.0.0/0` to retrieve from DHCP (not recommended). |
 | `staticipblock_offset`  | Specify the starting offset of the staticipblock to begin assigning IP addresses from.  e.g. with staticipblock 192.168.0.0/16, offset of 10 will cause IP address assignment to begin at 192.168.0.11. |
 | `gateway` | Default gateway to configure for all VMs.  Leave blank to retrieve from DHCP. |
@@ -84,7 +86,7 @@ Although the template defaults configure the cluster using DHCP addresses, it is
 | `network_cidr` | Container overlay network subnet; this subnet is internal to the cluster but should not overlap with other subnets in the environment.  Default is `192.168.0.0/16` |
 | `service_network_cidr` | Service network subnet; this is internal to the cluster but should not overlap with other subnets in the environment.  Default is `10.10.10.0/24 |
 
-** ICP Installation variables **
+#### ICP Installation variables
 
 | name | default value                       | value        |
 |----------------|------------|--------------|
@@ -94,7 +96,7 @@ Although the template defaults configure the cluster using DHCP addresses, it is
 | `image_location` | &lt;none&gt; | location of ICP binary package,  e.g. `http://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz` or `nfs:<myhost>:/path/to/ibm-cloud-private-x86_64-2.1.0.2.tar.gz` |
 | `icp_inception_image` | `ibmcom/icp-inception:2.1.0.2-ee` | Name of the `icp-inception` image to use.  You may need to change it to install a different version of ICP. |
 
-** ICP Configuration Variables **
+#### ICP Configuration Variables
 
 The ICP configuration can further be customized by editing the [icp-config.yaml](icp-config.yaml) file and by following the [product documentation](https://www.ibm.com/support/knowledgecenter/SSBS6K_2.1.0.2/installing/config_yaml.html).  The Terraform templates here expose the key variables that have infrastructure dependencies.
 
