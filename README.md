@@ -104,6 +104,12 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
    audit_mount_src = "10.0.0.5:/storage/jkwong/var_lib_icp_audit"
    ```
 
+1. Run `terraform init` to download depenencies (modules and plugins)
+
+1. Run `terraform plan` to investigate deployment plan
+
+1. Run `terraform apply` to start deployment
+
 ### Terraform confiruation
 
 #### vSphere variables
@@ -164,11 +170,3 @@ The ICP configuration can further be customized by editing the [icp-config.yaml]
 | `audit_mount_src` | yes | Source of the shared storage for the audit directory `/var/lib/icp/audit` |
 | `audit_mount_type` | no | Type of mountpoint for the audit shared storage directory.  `nfs` by default. |
 | `audit_mount_options` | no | Mount options to pass to the audit mountpoint.  `defaults` by default. |
-
-### Execute Terraform
-
-1. Run `terraform init` to download depenencies (modules and plugins)
-
-1. Run `terraform plan` to investigate deployment plan
-
-1. Run `terraform apply` to start deployment
