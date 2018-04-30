@@ -110,7 +110,7 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 
 1. Run `terraform apply` to start deployment
 
-### Terraform confiruation
+### Terraform configuration
 
 #### vSphere variables
 
