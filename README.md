@@ -52,7 +52,57 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 
 1. git clone or download the templates
 
-1. Create a `terraform.tfvars` file to reflect your environment.  Please see [variables.tf](variables.tf) for variable names and descriptions.   
+1. Create a `terraform.tfvars` file to reflect your environment.  Please see [variables.tf](variables.tf) and below tables for variable names and descriptions.  Here is an example `terraform.tfvars` file:
+
+   ```
+   vsphere_server = "10.25.0.20"
+   vsphere_user = "jkwong"
+   vsphere_password = "MyPassword!"
+   vsphere_datacenter = "DC1"
+   vsphere_cluster = "Cluster1"
+   vsphere_resource_pool = "/jkwong/ICP"
+   network_label = "LabPrivate"
+   datastore = "LabDatastore"
+   template = "RHEL7-4-docker"
+   staticipblock = "10.30.0.0/24"
+   staticipblock_offset = 2
+   gateway = "10.0.0.1"
+   netmask = "16"
+   dns_servers = [ "10.0.0.11", "10.0.0.12" ]
+   network_cidr = "172.16.0.0/20"
+   service_network_cidr = "192.168.0.0/24"
+   master = {
+       nodes = "3"
+       docker_disk_size = 250
+   }
+   proxy = {
+       nodes = "3"
+   }
+   worker = {
+       nodes = "12"
+       vcpu = "4"
+       memory = "16384"
+   }
+   management = {
+       nodes = "3"
+       log_disk_size = 100
+   }
+   va = {
+       nodes = "3"
+   }
+   icppassword = "admin"
+   ssh_user = "jkwong"
+   icp_inception_image = "ibmcom/icp-inception:2.1.0.2-ee"
+   docker_package_location = "nfs:10.0.0.5:/storage/icp/2.1.0.2/GA/icp-docker-17.09_x86_64.bin"
+
+   cluster_vip = "10.31.0.1"
+   cluster_vip_iface = "ens160"
+   proxy_vip = "10.31.0.2"
+   proxy_vip_iface = "ens160"
+
+   registry_mount_src = "10.0.0.5:/storage/jkwong/var_lib_registry"
+   audit_mount_src = "10.0.0.5:/storage/jkwong/var_lib_icp_audit"
+   ```
 
 ### Terraform confiruation
 
