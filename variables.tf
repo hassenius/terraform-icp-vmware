@@ -234,11 +234,6 @@ variable "image_location" {
   default     = ""
 }
 
-variable "image_repo" {
-  description = "Registry prefix to install all ICP images from"
-  default     = "ibmcom"
-}
-
 variable "registry_mount_src" {
   description = "Mount point containing the shared registry directory for /var/lib/registry"
   default     = ""

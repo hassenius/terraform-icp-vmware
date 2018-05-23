@@ -1,3 +1,10 @@
+
+locals {
+    registry_split = "${split("@", var.icp_inception_image)}"
+    registry_creds = "${length(local.registry_split) > 1 ? "${element(local.registry_split, 0)}" : ""}"
+    image          = "${length(local.registry_split) > 1 ? "${replace(var.icp_inception_image, "/.*@/", "")}" : "${var.icp_inception_image}" }"
+}
+
 ##################################
 ### Deploy ICP to cluster
 ##################################
@@ -48,8 +55,11 @@ module "icpprovision" {
       "calico_ip_autodetection_method"  = "first-found"
       "default_admin_password"          = "${var.icppassword}"
       "disabled_management_services"    = [ "${var.va["nodes"] == 0 ? "va" : "" }" ]
-      "image_repo"                      = "${var.image_repo}"
-
+      "image_repo"                      = "${dirname(local.image)}"
+      "private_registry_enabled"        = "${local.registry_creds != "" ? "true" : "false" }"
+      "private_registry_server"         = "${local.registry_creds != "" ? "${dirname(dirname(local.image))}" : "" }"
+      "docker_username"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/:.*/", "")}" : "" }"
+      "docker_password"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/.*:/", "")}" : "" }"
     }
 
     # We will let terraform generate a new ssh keypair
