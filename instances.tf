@@ -162,8 +162,15 @@ resource "vsphere_virtual_machine" "icpmaster" {
       "/tmp/terraform_scripts/create-part.sh -p /opt/ibm/cfc -d /dev/sdc",
       "sudo mkdir -p /var/lib/registry",
       "sudo mkdir -p /var/lib/icp/audit",
-      "echo '${var.registry_mount_src} /var/lib/registry   ${var.registry_mount_type}  ${var.registry_mount_options}   0 0' | sudo tee -a /etc/fstab",
-      "echo '${var.audit_mount_src} /var/lib/icp/audit   ${var.audit_mount_type}  ${var.audit_mount_options}  0 0' | sudo tee -a /etc/fstab",
+      "${var.registry_mount_src == "" ?
+        "echo na"
+        :
+        "echo '${var.registry_mount_src} /var/lib/registry   ${var.registry_mount_type}  ${var.registry_mount_options}   0 0' | sudo tee -a /etc/fstab"
+      }",
+      "${var.audit_mount_src == "" ?
+        "echo na"
+        :
+        "echo '${var.audit_mount_src} /var/lib/icp/audit   ${var.audit_mount_type}  ${var.audit_mount_options}  0 0' | sudo tee -a /etc/fstab"}",
       "sudo mount -a"
     ]
   }
