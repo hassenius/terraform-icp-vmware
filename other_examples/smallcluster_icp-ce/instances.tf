@@ -71,7 +71,7 @@ resource "vsphere_virtual_machine" "icpmaster" {
   scsi_type     = "${data.vsphere_virtual_machine.template.scsi_type}"
 
   disk {
-    name             = "${format("${lower(var.instance_name)}-master%01d.vmdk", count.index + 1) }"
+    label             = "${format("${lower(var.instance_name)}-master%01d.vmdk", count.index + 1) }"
     size             = "${var.master["disk_size"]        != "" ? var.master["disk_size"]        : data.vsphere_virtual_machine.template.disks.0.size}"
     eagerly_scrub    = "${var.master["eagerly_scrub"]    != "" ? var.master["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
     thin_provisioned = "${var.master["thin_provisioned"] != "" ? var.master["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
@@ -135,7 +135,7 @@ resource "vsphere_virtual_machine" "icpproxy" {
   scsi_type     = "${data.vsphere_virtual_machine.template.scsi_type}"
 
   disk {
-    name             = "${format("${lower(var.instance_name)}-proxy%01d.vmdk", count.index + 1) }"
+    label             = "${format("${lower(var.instance_name)}-proxy%01d.vmdk", count.index + 1) }"
     size             = "${var.proxy["disk_size"]        != "" ? var.proxy["disk_size"]        : data.vsphere_virtual_machine.template.disks.0.size}"
     eagerly_scrub    = "${var.proxy["eagerly_scrub"]    != "" ? var.proxy["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
     thin_provisioned = "${var.proxy["thin_provisioned"] != "" ? var.proxy["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
@@ -196,7 +196,7 @@ resource "vsphere_virtual_machine" "icpworker" {
   scsi_type     = "${data.vsphere_virtual_machine.template.scsi_type}"
 
   disk {
-    name             = "${format("${lower(var.instance_name)}-worker%01d.vmdk", count.index + 1) }"
+    label             = "${format("${lower(var.instance_name)}-worker%01d.vmdk", count.index + 1) }"
     size             = "${var.worker["disk_size"]        != "" ? var.worker["disk_size"]        : data.vsphere_virtual_machine.template.disks.0.size}"
     eagerly_scrub    = "${var.worker["eagerly_scrub"]    != "" ? var.worker["eagerly_scrub"]    : data.vsphere_virtual_machine.template.disks.0.eagerly_scrub}"
     thin_provisioned = "${var.worker["thin_provisioned"] != "" ? var.worker["thin_provisioned"] : data.vsphere_virtual_machine.template.disks.0.thin_provisioned}"
@@ -236,7 +236,7 @@ resource "vsphere_virtual_machine" "icpworker" {
 ### Deploy ICP to cluster
 ##################################
 module "icpprovision" {
-    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=1.0.0"
+    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.3.3"
 
     # Provide IP addresses for master, proxy and workers
     icp-master = ["${vsphere_virtual_machine.icpmaster.*.default_ip_address}"]
@@ -244,16 +244,16 @@ module "icpprovision" {
     icp-worker = ["${vsphere_virtual_machine.icpworker.*.default_ip_address}"]
     
     # Provide desired ICP version to provision
-    icp-version = "ibmcom/icp-inception:2.1.0"
+    icp-version = "${var.icp_version}"
 
 
     /* Workaround for terraform issue #10857
-     When this is fixed, we can work this out autmatically */
+     When this is fixed, we can work this out automatically */
     cluster_size  = "${var.master["nodes"] + var.worker["nodes"] + var.proxy["nodes"]}"
 
     ###################################################################################################################################
     ## You can feed in arbitrary configuration items in the icp_configuration map.
-    ## Available configuration items availble from https://www.ibm.com/support/knowledgecenter/SSBS6K_2.1.0/installing/config_yaml.html
+    ## Available configuration items available from https://www.ibm.com/support/knowledgecenter/SSBS6K_2.1.0/installing/config_yaml.html
     icp_configuration = {
       "network_cidr"              = "192.168.0.0/16"
       "service_cluster_ip_range"  = "10.10.10.0/24"
@@ -269,8 +269,6 @@ module "icpprovision" {
     # SSH user and key for terraform to connect to newly created VMs
     # ssh_key is the private key corresponding to the public assumed to be included in the template
     ssh_user  = "${var.ssh_user}"
-    ssh_key   = "${var.ssh_keyfile}"
+    ssh_key_file   = "${var.ssh_keyfile}"
     ssh_agent = false
 } 
-
-
