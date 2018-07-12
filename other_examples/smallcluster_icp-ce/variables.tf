@@ -143,6 +143,10 @@ variable "worker" {
   }
 }
 
+variable "icp_version" {
+  description = "Supports the format 'org/repo:version', as well as just '2.1.0.X' version. 'ibmcom/icp-inception:2.1.0.3' and '2.1.0.3' provide the same outcome."
+  default     = "2.1.0.3"
+}
 
 variable "icppassword" { 
   description = "Password for the initial admin user in ICP"
