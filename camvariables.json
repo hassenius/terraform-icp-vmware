@@ -174,7 +174,7 @@
         "required": true,
         "secured": true,
         "type": "string",
-        "default":"xtS8perUser",
+        "default":"",
         "regex": "^[!-~]{6,72}$"
     },
     {
@@ -186,6 +186,16 @@
         "immutable": false,
         "required": true,
         "secured": false,
+        "type": "string"
+    },
+    {
+        "name": "ssh_key_base64",
+        "label": "User ssh private key",
+        "description": "It is a workaround of current terraform deploy for VMWare",
+        "hidden": false,
+        "immutable": false,
+        "required": true,
+        "secured": true,
         "type": "string"
     },
     {
