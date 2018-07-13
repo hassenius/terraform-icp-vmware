@@ -284,42 +284,6 @@
     "required": true,
     "hidden": false,
     "immutable": false
-    },
-    {
-      "type": "map",
-      "label": "Proxy Nodes",
-      "name": "proxy",
-    "description": "Proxy node defination",
-    "required": true,
-    "hidden": false,
-    "immutable": false
-    },
-    {
-      "type": "map",
-      "label": "Worker Nodes",
-      "name": "worker",
-    "description": "worker node defination",
-    "required": true,
-    "hidden": false,
-    "immutable": false
-    },
-    {
-      "type": "map",
-      "label": "Management Nodes",
-      "name": "management",
-    "description": "worker node defination",
-    "required": true,
-    "hidden": false,
-    "immutable": false
-  },
-  {
-    "type": "map",
-    "label": "Vulnerability Nodes",
-    "name": "va",
-    "description": "worker node defination",
-    "required": true,
-    "hidden": false,
-    "immutable": false
-  }
+    }
 ]
 }
