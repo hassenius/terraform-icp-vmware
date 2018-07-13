@@ -154,11 +154,11 @@
       "immutable": false,
       "options": [{
           "value": "172.16.0.11",
-          "label": "172.16.0.11",
+          "label": "server1",
           "selected": "true"
         }, {
           "value": "172.16.0.17",
-          "label ": "172.16.0.17",
+          "label ": "server2",
           "selected ": "true"
         }
       ]
