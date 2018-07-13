@@ -275,16 +275,6 @@
       "secured": false,
       "type": "string"
     },
-    {
-      "type": "map",
-      "label": "workernode",
-      "name": "worker",
-      "default": {"nodes":"3", "vcpu":"8", "memory":"8124"},
-    "description": "worker node defination",
-    "required": true,
-    "hidden": false,
-    "immutable": false
-  },
   {
     "type": "map",
     "label": "Master nodes",
