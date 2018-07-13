@@ -146,7 +146,7 @@
     },
     {
         "name": "netmask",
-        "label": "Network network value",
+        "label": "Network netmask value",
         "description": "For example 16",
         "default": "16",
         "hidden": false,
@@ -175,17 +175,6 @@
           "selected": "false"
         }
       ]
-    },
-    {
-        "name": "datastore",
-        "label": "vSphere datastore for storage",
-        "description": "For example CASE",
-        "default": "CASE",
-        "hidden": false,
-        "immutable": false,
-        "required": true,
-        "secured": false,
-        "type": "string"
     },
     {
         "name": "icppassword",
