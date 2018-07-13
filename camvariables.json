@@ -274,7 +274,7 @@
     "required": true,
     "hidden": false,
     "immutable": false
-  },,
+  },
     {
       "type": "map",
       "label": "Proxy Nodes",
