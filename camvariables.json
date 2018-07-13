@@ -184,7 +184,7 @@
         "immutable": false,
         "required": true,
         "secured": true,
-        "type": "password",
+        "type": "string",
         "regex": "^[!-~]{6,72}$"
     },
     {
