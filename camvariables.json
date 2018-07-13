@@ -279,7 +279,7 @@
     "type": "map",
     "label": "Master nodes",
     "name": "master",
-    "default": {"nodes":"3", "vcpu":"8", "memory":"16384", "docker_disk_size":"250", "thin_provisioned":"true"},
+    "default": {"nodes":"3","vcpu":"8","memory":"16384","docker_disk_size":"250","thin_provisioned":"true"},
     "description": "Master node defination",
     "required": true,
     "hidden": false,
@@ -289,7 +289,6 @@
       "type": "map",
       "label": "Proxy Nodes",
       "name": "proxy",
-      "default": {"nodes":"3", "vcpu":"4", "memory":"8124", "thin_provisioned":"true"},
     "description": "Proxy node defination",
     "required": true,
     "hidden": false,
@@ -299,7 +298,6 @@
       "type": "map",
       "label": "Worker Nodes",
       "name": "worker",
-      "default": {"nodes":"3", "vcpu":"8", "memory":"16384", "thin_provisioned":"true"},
     "description": "worker node defination",
     "required": true,
     "hidden": false,
@@ -309,7 +307,6 @@
       "type": "map",
       "label": "Management Nodes",
       "name": "management",
-      "default": {"nodes":"3", "vcpu":"4", "memory":"16384", "thin_provisioned":"true"},
     "description": "worker node defination",
     "required": true,
     "hidden": false,
@@ -319,31 +316,6 @@
     "type": "map",
     "label": "Vulnerability Nodes",
     "name": "va",
-    "options": [
-    {
-      "key":"nodes",
-      "value": "3",
-      "label": "nodes",
-      "selected": "true"
-    },
-    {
-      "key":"vcpu",
-      "value": "4",
-      "label": "vcpu",
-      "selected": "false"
-    },
-    { "key":"memory",
-      "value": "8192",
-      "label": "memory",
-      "selected": "false"
-    },
-    {
-      "key":"thin_provisioned",
-      "value": "true",
-      "label": "thin_provisioned",
-      "selected": "false"
-    }
-  ],
     "description": "worker node defination",
     "required": true,
     "hidden": false,
