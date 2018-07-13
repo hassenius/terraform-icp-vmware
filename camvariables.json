@@ -155,27 +155,6 @@
         "type": "string"
     },
     {
-      "type": "list",
-      "secured": "false",
-      "label": "dns_servers",
-      "name": "dns_servers",
-      "description": "DNS server of your vSphere environment",
-      "required": true,
-      "hidden": "false",
-      "immutable": false,
-      "options": [{
-          "value": "172.16.0.11",
-          "label": "172.16.0.11",
-          "selected": "true"
-        },
-        {
-          "value ": "172.16.0.17",
-          "label": "172.16.0.17",
-          "selected": "false"
-        }
-      ]
-    },
-    {
         "name": "icppassword",
         "label": "ICP Admin User Password",
         "description": "Password of the newly created administrative user; The supplied password must be between 6-72 characters long and must satisfy at least 3 of password complexity requirements from the following: 1) Contains an uppercase character; 2) Contains a lowercase character; 3) Contains a numeric digit; 4) Contains a special character",
