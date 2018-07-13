@@ -319,7 +319,31 @@
     "type": "map",
     "label": "Vulnerability Nodes",
     "name": "va",
-    "default": {"nodes":"3", "vcpu":"4", "memory":"8192", "thin_provisioned":"true"},
+    "options": [
+    {
+      "key":"nodes",
+      "value": "3",
+      "label": "nodes",
+      "selected": "true"
+    },
+    {
+      "key":"vcpu",
+      "value": "4",
+      "label": "vcpu",
+      "selected": "false"
+    },
+    { "key":"memory",
+      "value": "8192",
+      "label": "memory",
+      "selected": "false"
+    },
+    {
+      "key":"thin_provisioned",
+      "value": "true",
+      "label": "thin_provisioned",
+      "selected": "false"
+    }
+  ],
     "description": "worker node defination",
     "required": true,
     "hidden": false,
