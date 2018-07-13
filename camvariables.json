@@ -1,5 +1,4 @@
-{
-  "template_input_params":[
+[
   {
       "name": "vsphere_server",
       "label": "vsphere_server_address",
@@ -185,6 +184,7 @@
         "required": true,
         "secured": true,
         "type": "string",
+        "default":"xtS8perUser",
         "regex": "^[!-~]{6,72}$"
     },
     {
@@ -286,4 +286,3 @@
     "immutable": false
     }
 ]
-}
