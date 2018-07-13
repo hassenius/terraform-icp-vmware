@@ -144,24 +144,14 @@
         "type": "string"
     },
     {
-      "type": "list",
-      "secured": "false",
-      "label": "dns_servers",
       "name": "dns_servers",
+      "type": "list",
+      "secured": false,
+      "label": "dns servers",
       "description": "DNS server of your vSphere environment",
       "required": true,
-      "hidden": "false",
-      "immutable": false,
-      "options": [{
-          "value": "172.16.0.11",
-          "label": "server1",
-          "selected": "true"
-        }, {
-          "value": "172.16.0.17",
-          "label ": "server2",
-          "selected ": "true"
-        }
-      ]
+      "hidden": false,
+      "immutable": false
     },
     {
         "name": "netmask",
