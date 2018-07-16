@@ -78,6 +78,6 @@ module "icpprovision" {
     # ssh_key is the private key corresponding to the public assumed to be included in the template
     ssh_user        = "${var.ssh_user}"
     #ssh_key_base64  = "${base64encode(file(var.ssh_keyfile))}"
-    ssh_key_base64 = ${var.ssh_key_base64 != "" ? var.ssh_key_base64 : base64encode(file(var.ssh_keyfile))}"
+    ssh_key_base64 = "${var.ssh_key_base64 != "" ? var.ssh_key_base64 : base64encode(file(var.ssh_keyfile))}"
     ssh_agent       = false
 }
