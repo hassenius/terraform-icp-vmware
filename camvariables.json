@@ -190,7 +190,17 @@
     },
     {
         "name": "ssh_key_base64",
-        "label": "User ssh private key",
+        "label": "64 encoded private key",
+        "description": "It is a workaround of current terraform deploy for VMWare",
+        "hidden": false,
+        "immutable": false,
+        "required": true,
+        "secured": true,
+        "type": "string"
+    },
+    {
+        "name": "ssh_keyfile",
+        "label": "Content of private key",
         "description": "It is a workaround of current terraform deploy for VMWare",
         "hidden": false,
         "immutable": false,
