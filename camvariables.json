@@ -199,16 +199,6 @@
         "type": "string"
     },
     {
-        "name": "ssh_keyfile",
-        "label": "Content of private key",
-        "description": "It is a workaround of current terraform deploy for VMWare",
-        "hidden": false,
-        "immutable": false,
-        "required": true,
-        "secured": true,
-        "type": "string"
-    },
-    {
         "name": "icp_inception_image",
         "label": "ICP installer image",
         "description": "ICP installer image name and location",
