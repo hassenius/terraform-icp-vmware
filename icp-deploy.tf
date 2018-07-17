@@ -9,7 +9,7 @@ locals {
 ### Deploy ICP to cluster
 ##################################
 module "icpprovision" {
-    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.2.1"
+    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.3.3"
 
     # Provide IP addresses for master, proxy and workers
     boot-node = "${vsphere_virtual_machine.icpmaster.0.default_ip_address}"
@@ -62,6 +62,13 @@ module "icpprovision" {
       "docker_password"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/.*:/", "")}" : "" }"
     }
 
+        hooks = {
+        "cluster-preconfig" = [
+            "sudo apt-get update",
+            "sudo apt-get -y install --only-upgrade docker-ce"
+       ]
+       }
+
     # We will let terraform generate a new ssh keypair
     # for boot master to communicate with worker and proxy nodes
     # during ICP deployment
@@ -70,6 +77,6 @@ module "icpprovision" {
     # SSH user and key for terraform to connect to newly created VMs
     # ssh_key is the private key corresponding to the public assumed to be included in the template
     ssh_user        = "${var.ssh_user}"
-    ssh_key_base64  = "${base64encode(file(var.ssh_keyfile))}"
+    ssh_key_base64  = "${var.ssh_key_base64}"
     ssh_agent       = false
 }
