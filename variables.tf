@@ -274,13 +274,14 @@ variable "ssh_user" {
   default     = "root"
 }
 
+variable "ssh_password" {
+  description = "Password which terraform will use to connect to newly created VMs during provisioning"
+  default     = ""
+}
+
 variable "ssh_keyfile" {
   description = "Location of private ssh key to connect to newly created VMs during provisioning"
   default     = "/dev/null"
-}
-
-variable "ssh_key_base64" {
-  default = ""
 }
 
 variable "icp_inception_image" {
