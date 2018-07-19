@@ -8,6 +8,9 @@
 # Crash log files
 crash.log
 
+# Ignore log files
+*.log
+
 # Ignore all private key files
 *.pem
 
