@@ -3,7 +3,7 @@
     "name": "vsphere_server",
     "label": "vsphere_server_address",
     "description": "VMWare vsphere Server IP address",
-    "default": "se-dev",
+    "default": "",
     "hidden": false,
     "immutable": false,
     "required": true,
