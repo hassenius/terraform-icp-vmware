@@ -55,6 +55,12 @@ locals  {
         : ""}"
 }
 
+##############################################################
+# Create temp public key for ssh connection
+##############################################################
+resource "tls_private_key" "ssh" {
+  algorithm = "RSA"
+}
 
 ##################################
 #### Create the Master VM
@@ -140,24 +146,22 @@ resource "vsphere_virtual_machine" "icpmaster" {
     }
   }
 
+  # Specify the ssh connection
+  connection {
+    user          = "${var.ssh_user}"
+    password      = "${var.ssh_password}"
+  }
+
   provisioner "file" {
     source      = "${path.module}/scripts"
     destination = "/tmp/terraform_scripts"
-
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
   }
 
   provisioner "remote-exec" {
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
-
     inline = [
       "sudo chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/add-public-ssh-key.sh \"${tls_private_key.ssh.public_key_openssh}\"",
+      "/tmp/terraform_scripts/add-private-ssh-key.sh \"${tls_private_key.ssh.private_key_pem}\" \"${var.ssh_user}\"",
       "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}",
       "/tmp/terraform_scripts/create-part.sh -p /opt/ibm/cfc -d /dev/sdc",
       "sudo mkdir -p /var/lib/registry",
@@ -247,24 +251,21 @@ resource "vsphere_virtual_machine" "icpproxy" {
     }
   }
 
+  # Specify the ssh connection
+  connection {
+    user          = "${var.ssh_user}"
+    password      = "${var.ssh_password}"
+  }
+
   provisioner "file" {
     source      = "${path.module}/scripts"
     destination = "/tmp/terraform_scripts"
-
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
   }
 
   provisioner "remote-exec" {
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
-
     inline = [
       "sudo chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/add-public-ssh-key.sh \"${tls_private_key.ssh.public_key_openssh}\"",
       "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}"
     ]
   }
@@ -345,24 +346,21 @@ resource "vsphere_virtual_machine" "icpmanagement" {
     }
   }
 
+  # Specify the ssh connection
+  connection {
+    user          = "${var.ssh_user}"
+    password      = "${var.ssh_password}"
+  }
+
   provisioner "file" {
     source      = "${path.module}/scripts"
     destination = "/tmp/terraform_scripts"
-
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
   }
 
   provisioner "remote-exec" {
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
-
     inline = [
       "sudo chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/add-public-ssh-key.sh \"${tls_private_key.ssh.public_key_openssh}\"",
       "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}",
       "/tmp/terraform_scripts/create-part.sh -p /opt/ibm/cfc -d /dev/sdc"
     ]
@@ -444,24 +442,21 @@ resource "vsphere_virtual_machine" "icpva" {
     }
   }
 
+  # Specify the ssh connection
+  connection {
+    user          = "${var.ssh_user}"
+    password      = "${var.ssh_password}"
+  }
+
   provisioner "file" {
     source      = "${path.module}/scripts"
     destination = "/tmp/terraform_scripts"
-
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
   }
 
   provisioner "remote-exec" {
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
-
     inline = [
       "sudo chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/add-public-ssh-key.sh \"${tls_private_key.ssh.public_key_openssh}\"",
       "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}",
       "/tmp/terraform_scripts/create-part.sh -p /var/lib/icp -d /dev/sdc"
     ]
@@ -541,24 +536,21 @@ resource "vsphere_virtual_machine" "icpworker" {
     }
   }
 
+  # Specify the ssh connection
+  connection {
+    user          = "${var.ssh_user}"
+    password      = "${var.ssh_password}"
+  }
+
   provisioner "file" {
     source      = "${path.module}/scripts"
     destination = "/tmp/terraform_scripts"
-
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
   }
 
   provisioner "remote-exec" {
-    connection {
-      user          = "${var.ssh_user}"
-      private_key   = "${file(var.ssh_keyfile)}"
-    }
-
     inline = [
       "sudo chmod u+x /tmp/terraform_scripts/*.sh",
+      "/tmp/terraform_scripts/add-public-ssh-key.sh \"${tls_private_key.ssh.public_key_openssh}\"",
       "/tmp/terraform_scripts/install-docker.sh -d /dev/sdb -p ${var.docker_package_location}"
     ]
   }
