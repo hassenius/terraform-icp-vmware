@@ -192,14 +192,16 @@
     "type": "string"
   },
   {
-    "name": "ssh_key_base64",
-    "label": "64 encoded private key",
-    "description": "It is a workaround of current terraform deploy for VMWare",
+    "name": "ssh_password",
+    "label": "VM user password to install ICP",
+    "description": "Password which terraform will use to connect to newly created VMs during provisioning",
+    "default": "virtuser",
     "hidden": false,
     "immutable": false,
     "required": true,
     "secured": true,
-    "type": "string"
+    "type": "string",
+    "default": ""
   },
   {
     "name": "icp_inception_image",
