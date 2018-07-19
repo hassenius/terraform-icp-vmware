@@ -55,7 +55,7 @@
     "type": "string"
   },
   {
-    "name": "resource_pool",
+    "name": "vsphere_resource_pool",
     "label": "vSphere resource pool name where all the VM will be deployed under",
     "description": "For example icp-2103-se-production",
     "default": "CASE/Resources/Rainbow/icp-2103-se-dev",
