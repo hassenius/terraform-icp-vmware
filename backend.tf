@@ -1,4 +1,4 @@
-terraform {
+/*terraform {
   backend "artifactory" {
     username = "admin"
     password = "letmein"
@@ -6,4 +6,4 @@ terraform {
     repo     = "lightsaber"
     subpath  = "icp-vmware"
   }
-}
+}*/
