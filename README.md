@@ -55,9 +55,6 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 1. Create a `terraform.tfvars` file to reflect your environment.  Please see [variables.tf](variables.tf) and below tables for variable names and descriptions.  Here is an example `terraform.tfvars` file:
 
    ```
-   vsphere_server = "10.25.0.20"
-   vsphere_user = "jkwong"
-   vsphere_password = "MyPassword!"
    vsphere_datacenter = "DC1"
    vsphere_cluster = "Cluster1"
    vsphere_resource_pool = "/jkwong/ICP"
@@ -105,6 +102,14 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
    ```
 
 1. Run `terraform init` to download depenencies (modules and plugins)
+
+1. Provide vsphere server and credentials as environment variables. For example
+
+  ```
+  $ export VSPHERE_SERVER="10.1.212.26"
+  $ export VSPHERE_USER="my_user@mycorp.local"
+  $ export VSPHERE_PASSWORD="MySecretPassword"
+  ```
 
 1. Run `terraform plan` to investigate deployment plan
 

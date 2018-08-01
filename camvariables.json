@@ -1,38 +1,5 @@
 [
   {
-    "name": "vsphere_server",
-    "label": "vsphere_server_address",
-    "description": "VMWare vsphere Server IP address",
-    "default": "",
-    "hidden": false,
-    "immutable": false,
-    "required": true,
-    "secured": false,
-    "type": "string"
-  },
-  {
-    "name": "vsphere_user",
-    "label": "vSphere user name",
-    "description": "vSphere user who has at least vm power user permission and able to invoke vSphere API",
-    "default": "admin",
-    "hidden": false,
-    "immutable": false,
-    "required": true,
-    "secured": false,
-    "type": "string"
-  },
-  {
-    "name": "vsphere_password",
-    "label": "vSphere User Password",
-    "description": "Password of the user who accesses the vSphere API",
-    "hidden": false,
-    "immutable": false,
-    "required": true,
-    "secured": true,
-    "type": "password",
-    "regex": "^[!-~]{6,72}$"
-  },
-  {
     "name": "vsphere_datacenter",
     "label": "vSphere DataCenter",
     "description": "For example CSPLAB",

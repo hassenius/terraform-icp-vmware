@@ -1,21 +1,15 @@
-####################################
-#### vSphere Access Credentials ####
-####################################
-variable "vsphere_server" {
-  description = "vsphere server to connect to"
-  default     = "___INSERT YOUR OWN____"
-}
-
-variable "vsphere_user" {
-  description = "Username to authenticate against vsphere"
-  default     = "___INSERT YOUR OWN____"
-}
-
-variable "vsphere_password" {
-  description = "Password to authenticate against vsphere"
-  default     = "___INSERT YOUR OWN____"
-}
-
+############################
+#### vSphere API Access ####
+############################
+##
+## vsphere_server, vsphere_user and vsphere_password should be
+## exposed to the provider as environment variables. For example
+##
+## export VSPHERE_SERVER="10.1.212.26"
+## export VSPHERE_USER="my_user@mycorp.local"
+## export VSPHERE_PASSWORD="MySecretPassword"
+## terraform plan
+##
 variable "allow_unverified_ssl" {
   description = "Allows terraform vsphere provider to communicate with vsphere servers with self signed certificates"
   default     = "true"
