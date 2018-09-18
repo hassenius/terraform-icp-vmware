@@ -134,11 +134,14 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 
 | name |  value                                  |
 |------------|------------------|
-| `staticipblock` |  Subnet to place all VMs in, in CIDR notation.  Ensure that the subnet has enough useable address for all created VMs.  For example, 192.168.0.0/24 will contain 256 addresses.  It is recommended to set this variable so that the cluster is configured with static IP addresses. The default is set to `0.0.0.0/0` to retrieve from DHCP (not recommended). |
-| `staticipblock_offset`  | Specify the starting offset of the staticipblock to begin assigning IP addresses from.  e.g. with staticipblock 192.168.0.0/16, offset of 10 will cause IP address assignment to begin at 192.168.0.11. |
+| **VMware network** |  |
 | `gateway` | Default gateway to configure for all VMs.  Leave blank to retrieve from DHCP. |
 | `netmask` | Number of bits, in CIDR notation, of the subnet netmask  (e.g. 16).  Set to `0` to retrieve from DHCP. |
 | `dns_servers` | List of DNS servers to configure in the VMs.  By default, uses Google public DNS (`8.8.8.8` and `8.8.4.4`).  Set to blank to retrieve from DHCP. |
+| **VM IP Calculation** | |
+| `staticipblock` |  Subnet to place all VMs in, in CIDR notation.  Ensure that the subnet has enough useable address for all created VMs.  For example, 192.168.0.0/24 will contain 256 addresses.  It is recommended to set this variable so that the cluster is configured with static IP addresses. The default is set to `0.0.0.0/0` to retrieve from DHCP (not recommended). |
+| `staticipblock_offset`  | Specify the starting offset of the staticipblock to begin assigning IP addresses from.  e.g. with staticipblock 192.168.0.0/16, offset of 10 will cause IP address assignment to begin at 192.168.0.11. |
+| **ICP Overlay network** |  |
 | `network_cidr` | Container overlay network subnet; this subnet is internal to the cluster but should not overlap with other subnets in the environment.  Default is `192.168.0.0/16` |
 | `service_network_cidr` | Service network subnet; this is internal to the cluster but should not overlap with other subnets in the environment.  Default is `10.10.10.0/24 |
 
