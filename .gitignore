@@ -1,0 +1,6 @@
+.terraform/*
+privatekey.pem
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+.DS_Store
