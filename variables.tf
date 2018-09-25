@@ -230,7 +230,7 @@ variable "docker_package_location" {
 }
 
 variable "image_location" {
-  description = "URI for image package location, e.g. http://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz or nfs:<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz"
+  description = "URI for image package location, e.g. http://<myhost>/ibm-cloud-private-x86_64-2.1.0.3.tar.gz or nfs:<myhost>/ibm-cloud-private-x86_64-2.1.0.3.tar.gz"
   default     = ""
 }
 
@@ -281,7 +281,7 @@ variable "ssh_keyfile" {
 
 variable "icp_inception_image" {
   description = "ICP image to use for installation"
-  default     = "ibmcom/icp-inception:2.1.0.2-ee"
+  default     = "ibmcom/icp-inception:2.1.0.3-ee"
 }
 
 variable "network_cidr" {
@@ -293,4 +293,14 @@ variable "network_cidr" {
 variable "service_network_cidr" {
   description = "Service network CIDR "
   default     = "10.10.10.0/24"
+}
+
+variable "disable_istio" {
+  description = "Disable Istio"
+  default     = "false"
+}
+
+variable "disable_custom_metrics_adapter" {
+  description = "Disable Custom Metrics Adapter"
+  default     = "false"
 }
