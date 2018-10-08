@@ -45,6 +45,11 @@ sudo partprobe
 sudo mkfs.ext4 ${device}1
 echo "${device}1 ${path}   ext4  defaults   0 0" | sudo tee -a /etc/fstab
 
-sudo apt -y install nfs-common
+if [[ "${OSLEVEL}" == "ubuntu" ]]
+then
+  sudo apt -y install nfs-common
+else
+  sudo yum -y install nfs-utils
+fi
 
 sudo mount -a
