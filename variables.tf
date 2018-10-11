@@ -72,16 +72,6 @@ variable "domain" {
   default     = ""
 }
 
-variable "staticipblock" {
-  description = "Specify start unused static ip cidr block to assign IP addresses to the cluster, e.g. 172.16.0.0/16.  Set to 0.0.0.0/0 for DHCP."
-  default     = "0.0.0.0/0"
-}
-
-variable "staticipblock_offset" {
-  description = "Specify the starting offset of the staticipblock to begin assigning IP addresses from.  e.g. with staticipblock 172.16.0.0/16, offset of 10 will cause IP address assignment to begin at 172.16.0.11."
-  default     = 0
-}
-
 variable "gateway" {
   description = "Default gateway for the newly provisioned VMs. Leave blank to use DHCP"
   default     = ""
@@ -144,8 +134,6 @@ variable "master" {
     thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
-
-    start_iprange = "" # Leave blank for DHCP, else masters will be allocated range starting from this address
   }
 }
 
@@ -168,8 +156,6 @@ variable "proxy" {
     thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
-
-    start_iprange = "" # Leave blank for DHCP, else proxies will be allocated range starting from this address
   }
 }
 
@@ -192,8 +178,6 @@ variable "worker" {
     thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
-
-    start_iprange = "" # Leave blank for DHCP, else workers will be allocated range starting from this address
   }
 }
 
@@ -217,8 +201,6 @@ variable "management" {
     thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
-
-    start_iprange = "" # Leave blank for DHCP, else workers will be allocated range starting from this address
   }
 }
 
@@ -242,8 +224,6 @@ variable "va" {
     thin_provisioned    = ""      # True or false. Whether to use thin provisioning on the disk. Leave blank to use same as template
     eagerly_scrub       = ""      # True or false. If set to true disk space is zeroed out on VM creation. Leave blank to use same as template
     keep_disk_on_remove = "false" # Set to 'true' to not delete a disk on removal.
-
-    start_iprange = "" # Leave blank for DHCP, else workers will be allocated range starting from this address
   }
 }
 
