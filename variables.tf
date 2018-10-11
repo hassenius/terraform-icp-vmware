@@ -149,6 +149,12 @@ variable "master" {
   }
 }
 
+variable "master_ips" {
+  type        = "list"
+  default     = []
+  description = "List of IPs to assign master nodes. Specifying less ips than nodes will lead to failure"
+}
+
 variable "proxy" {
   type = "map"
 
@@ -167,6 +173,12 @@ variable "proxy" {
   }
 }
 
+variable "proxy_ips" {
+  type        = "list"
+  default     = []
+  description = "List of IPs to assign proxy nodes. Specifying less ips than nodes will lead to failure"
+}
+
 variable "worker" {
   type = "map"
 
@@ -183,6 +195,12 @@ variable "worker" {
 
     start_iprange = "" # Leave blank for DHCP, else workers will be allocated range starting from this address
   }
+}
+
+variable "worker_ips" {
+  type        = "list"
+  default     = []
+  description = "List of IPs to assign worker nodes. Specifying less ips than nodes will lead to failure"
 }
 
 variable "management" {
@@ -204,6 +222,12 @@ variable "management" {
   }
 }
 
+variable "management_ips" {
+  type        = "list"
+  default     = []
+  description = "List of IPs to assign management nodes. Specifying less ips than nodes will lead to failure"
+}
+
 variable "va" {
   type = "map"
 
@@ -223,6 +247,11 @@ variable "va" {
   }
 }
 
+variable "va_ips" {
+  type        = "list"
+  default     = []
+  description = "List of IPs to assign va nodes. Specifying less ips than nodes will lead to failure"
+}
 
 variable "docker_package_location" {
   description = "URI for docker package location, e.g. http://<myhost>/icp-docker-17.09_x86_64.bin or nfs:<myhost>/icp-docker-17.09_x86_64.bin"

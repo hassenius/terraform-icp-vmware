@@ -131,7 +131,7 @@ resource "vsphere_virtual_machine" "icpmaster" {
         domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
       }
       network_interface {
-        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + count.index) : ""}"
+        ipv4_address  = "${length(var.master_ips) > 0 ? element(var.master_ips, count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
 
@@ -238,7 +238,7 @@ resource "vsphere_virtual_machine" "icpproxy" {
         domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
       }
       network_interface {
-        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + count.index) : ""}"
+        ipv4_address  = "${length(var.proxy_ips) > 0 ? element(var.proxy_ips, count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
 
@@ -337,7 +337,7 @@ resource "vsphere_virtual_machine" "icpmanagement" {
         domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
       }
       network_interface {
-        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + count.index) : ""}"
+        ipv4_address  = "${length(var.management_ips) > 0 ? element(var.management_ips, count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
       ipv4_gateway    = "${var.gateway}"
@@ -436,7 +436,7 @@ resource "vsphere_virtual_machine" "icpva" {
         domain    = "${var.domain != "" ? var.domain : format("%s.local", var.instance_name)}"
       }
       network_interface {
-        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + count.index) : ""}"
+        ipv4_address  = "${length(var.va_ips) > 0 ? element(var.va_ips, count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
       ipv4_gateway    = "${var.gateway}"
@@ -532,7 +532,7 @@ resource "vsphere_virtual_machine" "icpworker" {
       }
 
       network_interface {
-        ipv4_address  = "${var.staticipblock != "0.0.0.0/0" ? cidrhost(var.staticipblock, 1 + var.staticipblock_offset + var.master["nodes"] + var.proxy["nodes"] + var.management["nodes"] + var.va["nodes"] + count.index) : ""}"
+        ipv4_address  = "${length(var.worker_ips) > 0 ? element(var.worker_ips, count.index) : ""}"
         ipv4_netmask  = "${var.netmask}"
       }
 
