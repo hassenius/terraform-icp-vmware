@@ -1,6 +1,12 @@
-.terraform/*
-privatekey.pem
-terraform.tfstate
-terraform.tfstate.backup
-terraform.tfvars
-.DS_Store
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files
+*.tfvars
+
+# generated key files
+*.pem
