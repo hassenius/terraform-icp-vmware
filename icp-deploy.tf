@@ -1,9 +1,8 @@
-
-locals {
-    registry_split = "${split("@", var.icp_inception_image)}"
-    registry_creds = "${length(local.registry_split) > 1 ? "${element(local.registry_split, 0)}" : ""}"
-    image          = "${length(local.registry_split) > 1 ? "${replace(var.icp_inception_image, "/.*@/", "")}" : "${var.icp_inception_image}" }"
-}
+#locals {
+#    registry_split = "${split("@", var.icp_inception_image)}"
+#    registry_creds = "${length(local.registry_split) > 1 ? "${element(local.registry_split, 0)}" : ""}"
+#    image          = "${length(local.registry_split) > 1 ? "${replace(var.icp_inception_image, "/.*@/", "")}" : "${var.icp_inception_image}" }"
+#}
 
 ##################################
 ### Deploy ICP to cluster
