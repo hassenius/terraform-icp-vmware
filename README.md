@@ -3,7 +3,7 @@
 This Terraform example configurations uses the [VMware vSphere provider](https://www.terraform.io/docs/providers/vsphere/index.html) to provision virtual machines on VMware
 and [TerraForm Module ICP Deploy](https://github.com/ibm-cloud-architecture/terraform-module-icp-deploy) to prepare VMs and deploy [IBM Cloud Private](https://www.ibm.com/cloud-computing/products/ibm-cloud-private/) on them.  This Terraform template automates best practices learned from installing ICP on VMware at numerous client sites in production.
 
-This template provisions an HA cluster with ICP 2.1.0.2 enterprise edition.
+This template provisions an HA cluster with ICP 2.1.0.3 enterprise edition.
 
 ![](./static/icp_ha_vmware.png)
 
@@ -11,16 +11,15 @@ This template provisions an HA cluster with ICP 2.1.0.2 enterprise edition.
 ### Pre-requisites
 
 * Working copy of [Terraform](https://www.terraform.io/intro/getting-started/install.html)
-* The example assumes the VMs are provisioned from a template that has ssh keys loaded in `${HOME}/.ssh/authorized_keys`. After VM creation, terraform will SSH into the VM to prepare and start installation of ICP using the SSH key provided
-   If your VM template uses a different user from root, update the [`ssh_user` section in variables.tf](variables.tf#L154)
-* The template is tested on VM templates based on Ubuntu 16.04
+* The example assumes the VMs are provisioned from a template that has ssh public keys loaded in `${HOME}/.ssh/authorized_keys`. After VM creation, terraform will SSH into the VM to prepare and start installation of ICP using the SSH private key provided. If your VM template uses a different user from root, update the `ssh_user` section in [variables.tf](variables.tf#L154)
+* The template is tested on VM templates based on **Ubuntu 16.04**
 
 ### VM Template image preparation
 
 1. Create a VM image (RHEL or Ubuntu 16.04).
-   * the automation will create an additional block device at unit number 1 (i.e. `/dev/sdb`) for local docker container images  and attempt to configure Docker in [direct-lvm](https://docs.docker.com/storage/storagedriver/device-mapper-driver/#configure-loop-lvm-mode-for-testing) mode.  Additional block devices are also mounted at various directories that hold ICP data depending on the node role.  You may pre-install docker, but it must be configured in direct-lvm mode, with the direct-lvm block device as the second disk.  The simplest way of getting this to work is to create a template with a single OS disk without installing docker and let the automation configure direct-lvm mode.
+   * the automation will create an additional block device at unit number 1 (i.e. `/dev/sdb`) for local docker container images  and attempt to configure Docker in [direct-lvm](https://docs.docker.com/storage/storagedriver/device-mapper-driver/#configure-loop-lvm-mode-for-testing) mode.  Additional block devices are also mounted at various directories that hold ICP data depending on the node role. You may pre-install docker, but it must be configured in direct-lvm mode, with the direct-lvm block device as the second disk. The simplest way of getting this to work is to create a template with a single OS disk without installing docker and let the automation configure direct-lvm mode.
 
-1. Append the public key to `$HOME/.ssh/authorized_keys` that corresponds to the `ssh_user` and `ssh_key_file` you will pass to terraform.
+1. Append the public key to `$HOME/.ssh/authorized_keys` that corresponds to the `ssh_user` and `ssh_key_file` you will pass to terraform to enable terraform to successfully ssh into your VMs.
 
 1. Ensure that the `ssh_user` can call `sudo` without password.
 
@@ -39,7 +38,7 @@ This template provisions an HA cluster with ICP 2.1.0.2 enterprise edition.
 1. (optional) If you are not providing `image_location`, and have pre-installed docker, you can also pre-load the docker images from the ICP package you wish to install.
 
    ```bash
-   tar xf ibm-cloud-private-x86_64-2.1.0.2.tar.gz -O | sudo docker load
+   tar xf ibm-cloud-private-x86_64-2.1.0.3.tar.gz -O | sudo docker load
    ```
 
 1. Shutdown the VM Convert to a template, make note the name of the template.
@@ -55,56 +54,103 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 1. Create a `terraform.tfvars` file to reflect your environment.  Please see [variables.tf](variables.tf) and below tables for variable names and descriptions.  Here is an example `terraform.tfvars` file:
 
    ```
+   #######################################
+   ##### vSphere Access Credentials ######
+   #######################################
    vsphere_server = "10.25.0.20"
-   vsphere_user = "jkwong"
-   vsphere_password = "MyPassword!"
+   vsphere_user = "lab_user_1"
+   # Set the following variable as ENVIRONMENT VARIABLE via: export TF_VAR_vsphere_password=XXXX
+   # vsphere_password = ""
+
+   ##############################################
+   ##### vSphere deployment specifications ######
+   ##############################################
+   # Following resources must exist in vSphere
    vsphere_datacenter = "DC1"
    vsphere_cluster = "Cluster1"
-   vsphere_resource_pool = "/jkwong/ICP"
+   vsphere_resource_pool = "ICP2013_pool/terraform_icp_2103"
    network_label = "LabPrivate"
    datastore = "LabDatastore"
-   template = "RHEL7-4-docker"
+   template = "ubuntu_1604_base_template"
+   # Folder to provision the new VMs in, does not need to exist in vSphere
+   folder = "terraform_icp_2103"
+
+   ##################################
+   ##### ICP deployment details #####
+   ##################################
+
+   ##### ICP instance name #####
+   # MUST consist of only lower case alphanumeric characters and '-'
+   instance_name = "user1-icp-2103"
+
+
+   ##### Network #####
    staticipblock = "10.30.0.0/24"
    staticipblock_offset = 2
    gateway = "10.0.0.1"
    netmask = "16"
    dns_servers = [ "10.0.0.11", "10.0.0.12" ]
-   network_cidr = "172.16.0.0/20"
-   service_network_cidr = "192.168.0.0/24"
+
+   # Cluster access
+   cluster_vip = "10.30.0.1"
+   cluster_vip_iface = "ens160"
+   proxy_vip = "10.0.0.2"
+   proxy_vip_iface = "ens160"
+
+   ##### Local Terraform connectivity details #####
+   ssh_user = "virtuser"
+   ssh_keyfile = "~/.ssh/id_rsa_terraform_vmware"
+
+   ##### ICP installer image #####
+   icp_inception_image = "registry.lab.cloudns.cx/ibmcom/icp-inception:2.1.0.3-ee"
+
+   ##### ICP admin user password #####
+   # Non default admin user password 'admin' recommended
+   icppassword = "SuperPa88w0rd"
+
+   ##### ICP Cluster Components #####
    master = {
        nodes = "3"
-       docker_disk_size = 250
+       vcpu = "8"
+       memory = "16384"
+       docker_disk_size = "250"
+       thin_provisioned = "true"
    }
    proxy = {
        nodes = "3"
+       vcpu = "4"
+       memory = "8192"
+       thin_provisioned = "true"
    }
    worker = {
-       nodes = "12"
-       vcpu = "4"
-       memory = "16384"
+       nodes = "3"
+       vcpu = "8"
+       memory = "8192"
+       thin_provisioned = "true"
    }
    management = {
        nodes = "3"
-       log_disk_size = 100
+       vcpu = "4"
+       memory = "16384"
+       thin_provisioned = "true"
    }
    va = {
-       nodes = "3"
+       nodes = "2"
+       vcpu = "4"
+       memory = "8192"
+       thin_provisioned = "true"
    }
-   icppassword = "admin"
-   ssh_user = "jkwong"
-   icp_inception_image = "ibmcom/icp-inception:2.1.0.2-ee"
-   docker_package_location = "nfs:10.0.0.5:/storage/icp/2.1.0.2/GA/icp-docker-17.09_x86_64.bin"
 
-   cluster_vip = "10.31.0.1"
-   cluster_vip_iface = "ens160"
-   proxy_vip = "10.31.0.2"
-   proxy_vip_iface = "ens160"
+   ##### NFS Server #####
+   registry_mount_src = "10.0.0.5:/storage/user1-icp-2103/registry"
+   audit_mount_src = "10.0.0.5:/storage/user1-icp-2103/audit"
 
-   registry_mount_src = "10.0.0.5:/storage/jkwong/var_lib_registry"
-   audit_mount_src = "10.0.0.5:/storage/jkwong/var_lib_icp_audit"
+   ##### ICP Management Services #####
+   disable_istio = "true"
+   disable_custom_metrics_adapter = "false"
    ```
 
-1. Run `terraform init` to download depenencies (modules and plugins)
+1. Run `terraform init` to download dependencies (modules and plugins)
 
 1. Run `terraform plan` to investigate deployment plan
 
@@ -145,6 +191,7 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 | `network_cidr` | Container overlay network subnet; this subnet is internal to the cluster but should not overlap with other subnets in the environment.  Default is `192.168.0.0/16` |
 | `service_network_cidr` | Service network subnet; this is internal to the cluster but should not overlap with other subnets in the environment.  Default is `10.10.10.0/24 |
 
+
 #### ICP Installation variables
 
 | name | default value                       | value        |
@@ -154,6 +201,8 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 | `docker_package_location` | &lt;none&gt; | location of ICP docker package,  e.g. `http://<myhost>/icp-docker-17.09_x86_64.bin` or `nfs:<myhost>:/path/to/icp-docker-17.09_x86_64.bin` |
 | `image_location` | &lt;none&gt; | location of ICP binary package,  e.g. `http://<myhost>/ibm-cloud-private-x86_64-2.1.0.2.tar.gz` or `nfs:<myhost>:/path/to/ibm-cloud-private-x86_64-2.1.0.2.tar.gz` |
 | `icp_inception_image` | `ibmcom/icp-inception:2.1.0.2-ee` | Name of the `icp-inception` image to use.  You may need to change it to install a different version of ICP. |
+| `instance_name` | `icptest` | Name of the ICP installation. Will be used as basename for VMs. MUST consist of only lower case alphanumeric characters and '-' |
+| `domain` | `<instance_name>.icp` | Specify domain name to be used for linux customization on the VMs. |
 
 #### ICP Configuration Variables
 
@@ -173,3 +222,6 @@ The ICP configuration can further be customized by editing the [icp-config.yaml]
 | `audit_mount_src` | yes | Source of the shared storage for the audit directory `/var/lib/icp/audit` |
 | `audit_mount_type` | no | Type of mountpoint for the audit shared storage directory.  `nfs` by default. |
 | `audit_mount_options` | no | Mount options to pass to the audit mountpoint.  `defaults` by default. |
+| `icppassword` | yes | Password for the initial admin user in ICP. `admin` by default |
+| `disable_istio` | no | Disable Istio installation. `false` by default |
+| `disable_custom_metrics_adapter` | no | Disable custom metrics adapter installation. `false` by default |

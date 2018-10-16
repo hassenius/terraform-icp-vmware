@@ -9,7 +9,7 @@ locals {
 ### Deploy ICP to cluster
 ##################################
 module "icpprovision" {
-    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.3.3"
+    source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.3.4"
 
     # Provide IP addresses for master, proxy and workers
     boot-node = "${vsphere_virtual_machine.icpmaster.0.default_ip_address}"
@@ -37,7 +37,7 @@ module "icpprovision" {
 
     ###################################################################################################################################
     ## You can feed in arbitrary configuration items in the icp_configuration map.
-    ## Available configuration items availble from https://www.ibm.com/support/knowledgecenter/SSBS6K_2.1.0/installing/config_yaml.html
+    ## Available configuration items availble from https://www.ibm.com/support/knowledgecenter/SSBS6K_2.1.0.3/installing/config_yaml.html
     icp_config_file = "./icp-config.yaml"
     icp_configuration = {
       "network_cidr"                    = "${var.network_cidr}"
