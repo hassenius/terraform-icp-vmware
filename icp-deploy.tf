@@ -54,7 +54,7 @@ module "icpprovision" {
       "cluster_name"                    = "${var.instance_name}-cluster"
       "calico_ip_autodetection_method"  = "first-found"
       "default_admin_password"          = "${var.icppassword}"
-      "disabled_management_services"    = [ "${var.va["nodes"] == 0 ? "va" : "" }" ]
+      "disabled_management_services"    = [ "${var.va["nodes"] == 0 ? "vulnerability-advisor" : "" }" , "${var.disable_istio == "true" ? "istio" : "" }", "${var.disable_custom_metrics_adapter == "true" ? "custom-metrics-adapter" : "" }" ]
       #"image_repo"                      = "${dirname(local.image)}"
       #"private_registry_enabled"        = "${local.registry_creds != "" ? "true" : "false" }"
       #"private_registry_server"         = "${local.registry_creds != "" ? "${dirname(dirname(local.image))}" : "" }"
