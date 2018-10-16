@@ -21,3 +21,6 @@ crash.log
 terraform.tfvars
 terraform.tfvars.*
 terraform.tfvars_*
+
+# MacOS
+.DS_Store
