@@ -1,12 +1,23 @@
-#  Local .terraform directories
+# Local .terraform directories
 **/.terraform/*
 
 # .tfstate files
 *.tfstate
 *.tfstate.*
 
-# .tfvars files
-*.tfvars
+# Crash log files
+crash.log
 
-# generated key files
+# Ignore log files
+*.log
+
+# Ignore all private key files
 *.pem
+
+# Ignore any .tfvars files that are generated automatically for each Terraform run. Most
+# .tfvars files are managed as part of configuration and so should be included in
+# version control.
+#
+terraform.tfvars
+terraform.tfvars.*
+terraform.tfvars_*

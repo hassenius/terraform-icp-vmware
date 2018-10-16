@@ -1,5 +1,10 @@
 #kubelet_extra_args:
 kibana_install: true
-docker_extra_args:
-- --storage-driver=devicemapper
-- --storage-opt dm.directlvm_device=/dev/sdb
+management_services:
+ istio: disabled
+ storage-glusterfs: disabled
+ storage-minio: disabled
+image-security-enforcement:
+  clusterImagePolicy:
+    - name: "docker.io/ibmcom/*"
+      policy:

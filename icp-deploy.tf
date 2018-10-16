@@ -25,7 +25,7 @@ module "icpprovision" {
     icp-version = "${var.icp_inception_image}"
     image_location = "${var.image_location}"
 
-    parallell-image-pull = true
+    parallell-image-pull = "${var.parallel_image_pull}"
 
     /* Workaround for terraform issue #10857
      When this is fixed, we can work this out autmatically */
@@ -55,11 +55,11 @@ module "icpprovision" {
       "calico_ip_autodetection_method"  = "first-found"
       "default_admin_password"          = "${var.icppassword}"
       "disabled_management_services"    = [ "${var.va["nodes"] == 0 ? "va" : "" }" ]
-      "image_repo"                      = "${dirname(local.image)}"
-      "private_registry_enabled"        = "${local.registry_creds != "" ? "true" : "false" }"
-      "private_registry_server"         = "${local.registry_creds != "" ? "${dirname(dirname(local.image))}" : "" }"
-      "docker_username"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/:.*/", "")}" : "" }"
-      "docker_password"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/.*:/", "")}" : "" }"
+      #"image_repo"                      = "${dirname(local.image)}"
+      #"private_registry_enabled"        = "${local.registry_creds != "" ? "true" : "false" }"
+      #"private_registry_server"         = "${local.registry_creds != "" ? "${dirname(dirname(local.image))}" : "" }"
+      #"docker_username"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/:.*/", "")}" : "" }"
+      #"docker_password"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/.*:/", "")}" : "" }"
     }
 
     # We will let terraform generate a new ssh keypair
