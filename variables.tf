@@ -285,13 +285,12 @@ variable "icp_inception_image" {
 }
 
 variable "network_cidr" {
-  description = "Pod network CIDR "
+  description = "Pod network CIDR"
   default     = "192.168.0.0/16"
 }
 
-
 variable "service_network_cidr" {
-  description = "Service network CIDR "
+  description = "Service network CIDR"
   default     = "10.10.10.0/24"
 }
 
@@ -302,5 +301,10 @@ variable "disable_istio" {
 
 variable "disable_custom_metrics_adapter" {
   description = "Disable Custom Metrics Adapter"
+  default     = "false"
+}
+
+variable "parallel_image_pull" {
+  description = "Parallel Image Pull"
   default     = "false"
 }
