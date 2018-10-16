@@ -8,3 +8,6 @@ image-security-enforcement:
   clusterImagePolicy:
     - name: "docker.io/ibmcom/*"
       policy:
+docker_extra_args:
+  - --storage-driver=devicemapper
+  - --storage-opt dm.directlvm_device=/dev/sdb
