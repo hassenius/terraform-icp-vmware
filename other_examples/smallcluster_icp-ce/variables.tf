@@ -6,22 +6,12 @@ variable "vsphere_server" {
   default = "___INSERT YOUR OWN____" 
 }
 
-variable "vsphere_user" {
-  description = "Username to authenticate against vsphere"
-  default     = "___INSERT YOUR OWN____"
-}
-
-variable "vsphere_password" { 
-  description = "Password to authenticate against vsphere"
-  default = "___INSERT YOUR OWN____" 
-}
+# Set username/password as environment variables VSPHERE_USER and VSPHERE_PASSWORD
 
 variable "allow_unverified_ssl" { 
   description = "Allows terraform vsphere provider to communicate with vsphere servers with self signed certificates"
   default = "true" 
 } 
-
-
 
 ##############################################
 ##### vSphere deployment specifications ######
