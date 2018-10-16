@@ -53,7 +53,7 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 
 1. Export your vSphere username and password into environment variables on the system you will run Terraform from.  This can be done via the following commands:
   - `export VSPHERE_USER={myusername}` replacing `{myusername}` with your vSphere username
-  - `export VSPHERE_PASSWORD={mypassword}` replacing `{myusername}` with your vSphere password
+  - `export VSPHERE_PASSWORD={mypassword}` replacing `{mypassword}` with your vSphere password
   
 1. Create a `terraform.tfvars` file to reflect your environment.  Please see [variables.tf](variables.tf) and below tables for variable names and descriptions.  Here is an example `terraform.tfvars` file:
 
