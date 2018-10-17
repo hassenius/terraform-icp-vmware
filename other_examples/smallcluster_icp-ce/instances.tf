@@ -3,8 +3,6 @@
 ##################################
 provider "vsphere" {
   version        = "~> 1.1"
-  user           = "${var.vsphere_user}"
-  password       = "${var.vsphere_password}"
   vsphere_server = "${var.vsphere_server}"
 
   # if you have a self-signed cert

@@ -51,6 +51,10 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 
 1. git clone or download the templates
 
+1. Export your vSphere username and password into environment variables on the system you will run Terraform from.  This can be done via the following commands:
+  - `export VSPHERE_USER={myusername}` replacing `{myusername}` with your vSphere username
+  - `export VSPHERE_PASSWORD={mypassword}` replacing `{mypassword}` with your vSphere password
+  
 1. Create a `terraform.tfvars` file to reflect your environment.  Please see [variables.tf](variables.tf) and below tables for variable names and descriptions.  Here is an example `terraform.tfvars` file:
 
    ```
@@ -58,10 +62,9 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
    ##### vSphere Access Credentials ######
    #######################################
    vsphere_server = "10.25.0.20"
-   vsphere_user = "lab_user_1"
-   # Set the following variable as ENVIRONMENT VARIABLE via: export TF_VAR_vsphere_password=XXXX
-   # vsphere_password = ""
-
+   
+   # Set username/password as environment variables VSPHERE_USER and VSPHERE_PASSWORD
+   
    ##############################################
    ##### vSphere deployment specifications ######
    ##############################################
@@ -163,8 +166,8 @@ The automation requires an HTTP or NFS server to hold the ICP binaries and docke
 | name | required                        | value        |
 |----------------|------------|--------------|
 | `vsphere_server`   | yes          | IP or hostname of vSphere server |
-| `vsphere_user`   | yes          | Username for vSphere server |
-| `vsphere_password`     | yes          | Password for vSphere user     |
+| `vsphere_user`   | no, moved to environment variables          | Username for vSphere server |
+| `vsphere_password`     | no, moved to environment variables          | Password for vSphere user     |
 | `allow_unverified_ssl`   | no           | SSL certificate verification when connecting to vSphere, `true` by default. |
 | `vsphere_datacenter` | yes         | Name of the vSphere datacenter to deploy VMs to |
 | `vsphere_cluster` | yes         | Name of the vSphere cluster to deploy VMs to (must be under the vSphere datacenter) |
