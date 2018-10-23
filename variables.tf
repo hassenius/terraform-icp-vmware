@@ -3,7 +3,7 @@
 ####################################
 variable "vsphere_server" {
   description = "vsphere server to connect to"
-  default     = "___INSERT YOUR OWN____"
+  default     = "___INSERT_YOUR_OWN____"
 }
 
 # Set username/password as environment variables VSPHERE_USER and VSPHERE_PASSWORD
@@ -19,12 +19,12 @@ variable "allow_unverified_ssl" {
 
 variable "vsphere_datacenter" {
   description = "Name of the vsphere datacenter to deploy to"
-  default     = "___INSERT YOUR OWN____"
+  default     = "___INSERT_YOUR_OWN____"
 }
 
 variable "vsphere_cluster" {
   description = "Name of vsphere cluster to deploy to"
-  default     = "___INSERT YOUR OWN____"
+  default     = "___INSERT_YOUR_OWN____"
 }
 
 variable "vsphere_resource_pool" {
@@ -34,7 +34,7 @@ variable "vsphere_resource_pool" {
 
 variable "network_label" {
   description = "Name or label of network to provision VMs on. All VMs will be provisioned on the same network"
-  default     = "___INSERT YOUR OWN____"
+  default     = "___INSERT_YOUR_OWN____"
 }
 
 variable "datastore" {
@@ -46,7 +46,7 @@ variable "datastore" {
 # Because of https://github.com/terraform-providers/terraform-provider-vsphere/issues/271 templates must be converted to VMs on ESX 5.5 (and possibly other)
 variable "template" {
   description = "Name of template or VM to clone for the VM creations. Tested on Ubuntu 16.04 LTS"
-  default     = "___INSERT YOUR OWN____"
+  default     = "___INSERT_YOUR_OWN____"
 }
 
 variable "folder" {
@@ -266,9 +266,14 @@ variable "ssh_user" {
   default     = "root"
 }
 
+variable "ssh_password" {
+  description = "Password which terraform will use to connect to newly created VMs during provisioning"
+  default     = ""
+}
+
 variable "ssh_keyfile" {
   description = "Location of private ssh key to connect to newly created VMs during provisioning"
-  default     = "~/.ssh/id_rsa"
+  default     = "/dev/null"
 }
 
 variable "icp_inception_image" {
