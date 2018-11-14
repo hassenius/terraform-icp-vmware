@@ -1,11 +1,13 @@
 locals {
-#    registry_split = "${split("@", var.icp_inception_image)}"
-#    registry_creds = "${length(local.registry_split) > 1 ? "${element(local.registry_split, 0)}" : ""}"
-#    image          = "${length(local.registry_split) > 1 ? "${replace(var.icp_inception_image, "/.*@/", "")}" : "${var.icp_inception_image}" }"
+    image          = "${length(var.private_registry) > 1 ? "${var.private_registry}/${var.icp_inception_image}" : "${var.icp_inception_image}"}"
     icp_pub_key    = "${tls_private_key.ssh.public_key_openssh}"
     icp_priv_key   = "${tls_private_key.ssh.private_key_pem}"
     ssh_user       = "${var.ssh_user}"
     ssh_key_base64 = "${base64encode(tls_private_key.ssh.private_key_pem)}"
+
+    # This is just to have a long list of disabled items to use in icp-deploy.tf
+    disabled_list = "${list("disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled","disabled")}"
+    disabled_management_services = "${zipmap(var.disabled_management_services, slice(local.disabled_list, 0, length(var.disabled_management_services)))}"
 }
 
 ##################################
@@ -25,7 +27,7 @@ module "icpprovision" {
     }
 
     # Provide desired ICP version to provision
-    icp-version = "${var.icp_inception_image}"
+    icp-version = "${length(var.registry_username) > 1 ?  "${var.registry_username}:${var.registry_password}@${local.image}" : "${local.image}"}"
     image_location = "${var.image_location}"
 
     parallell-image-pull = "${var.parallel_image_pull}"
@@ -57,12 +59,13 @@ module "icpprovision" {
       "cluster_name"                    = "${var.instance_name}-cluster"
       "calico_ip_autodetection_method"  = "first-found"
       "default_admin_password"          = "${var.icppassword}"
-      "disabled_management_services"    = [ "${var.va["nodes"] == 0 ? "vulnerability-advisor" : "" }" , "${var.disable_istio == "true" ? "istio" : "" }", "${var.disable_custom_metrics_adapter == "true" ? "custom-metrics-adapter" : "" }" ]
-      #"image_repo"                      = "${dirname(local.image)}"
-      #"private_registry_enabled"        = "${local.registry_creds != "" ? "true" : "false" }"
-      #"private_registry_server"         = "${local.registry_creds != "" ? "${dirname(dirname(local.image))}" : "" }"
-      #"docker_username"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/:.*/", "")}" : "" }"
-      #"docker_password"                 = "${local.registry_creds != "" ? "${replace(local.registry_creds, "/.*:/", "")}" : "" }"
+      # This is the list of disabled management services
+      "management_services"             = "${local.disabled_management_services}"
+      "private_registry_enabled"        = "${length(var.private_registry) > 1 ? "true" : "false"}"
+      "private_registry_server"         = "${var.private_registry}"
+      "image_repo"                      = "${length(var.private_registry) > 1 ? "${dirname(local.image)}" : ""}"
+      "docker_username"                 = "${length(var.registry_username) > 1 ? "${var.registry_username}" : "'null'"}"
+      "docker_password"                 = "${length(var.registry_password) > 1 ? "${var.registry_password}" : "'null'"}"
     }
 
     # We will let terraform generate a new ssh keypair

@@ -217,13 +217,28 @@ variable "va" {
 
 
 variable "docker_package_location" {
-  description = "URI for docker package location, e.g. http://<myhost>/icp-docker-17.09_x86_64.bin or nfs:<myhost>/icp-docker-17.09_x86_64.bin"
+  description = "URI for docker package location, e.g. http://<myhost>/icp-docker-18.03_x86_64.bin or nfs:<myhost>/icp-docker-18.03_x86_64.bin"
   default     = ""
 }
 
 variable "image_location" {
-  description = "URI for image package location, e.g. http://<myhost>/ibm-cloud-private-x86_64-2.1.0.3.tar.gz or nfs:<myhost>/ibm-cloud-private-x86_64-2.1.0.3.tar.gz"
+  description = "URI for image package location, e.g. http://<myhost>/ibm-cloud-private-x86_64-3.1.0.tar.gz or nfs:<myhost>/ibm-cloud-private-x86_64-3.1.0.tar.gz"
   default     = ""
+}
+
+variable "private_registry" {
+  description = "Private docker registry where the ICP installation image is located"
+  default     = ""
+}
+
+variable "registry_username" {
+  description = "Username for the private docker restistry the ICP image will be grabbed from"
+  default   = ""
+}
+
+variable "registry_password" {
+  description = "Password for the private docker restistry the ICP image will be grabbed from"
+  default   = ""
 }
 
 variable "registry_mount_src" {
@@ -278,7 +293,7 @@ variable "ssh_keyfile" {
 
 variable "icp_inception_image" {
   description = "ICP image to use for installation"
-  default     = "ibmcom/icp-inception:2.1.0.3-ee"
+  default     = "ibmcom/icp-inception-amd64:3.1.0-ee"
 }
 
 variable "network_cidr" {
@@ -291,17 +306,15 @@ variable "service_network_cidr" {
   default     = "10.10.10.0/24"
 }
 
-variable "disable_istio" {
-  description = "Disable Istio"
-  default     = "false"
-}
-
-variable "disable_custom_metrics_adapter" {
-  description = "Disable Custom Metrics Adapter"
-  default     = "false"
-}
-
 variable "parallel_image_pull" {
   description = "Parallel Image Pull"
   default     = "false"
+}
+
+# The following services can be disabled for 3.1
+# custom-metrics-adapter, image-security-enforcement, istio, metering, monitoring, service-catalog, storage-minio, storage-glusterfs, and vulnerability-advisor
+variable "disabled_management_services" {
+  description = "List of management services to disable"
+  type        = "list"
+  default     = ["istio", "vulnerability-advisor", "storage-glusterfs", "storage-minio"]
 }

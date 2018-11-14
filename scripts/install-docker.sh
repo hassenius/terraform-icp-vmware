@@ -33,38 +33,90 @@ echo "Docker block device is ${docker_disk}"
 sourcedir=/tmp/icp-docker
 
 # Figure out if we're asked to install at all
-if [[ -z ${package_location} ]]
-then
-  echo "Not required to install ICP provided docker. Exiting"
-  exit 0
-fi
+#if [[ -z ${package_location} ]]
+#then
+#  echo "Not required to install ICP provided docker. Exiting"
+#  exit 0
+#fi
 
 if docker --version; then
   echo "Docker already installed. "
 else
   echo "Installing docker ..."
 
-  mkdir -p ${sourcedir}
-
-  # Decide which protocol to use
-  if [[ "${package_location:0:3}" == "nfs" ]]
+  if [[ -z ${package_location} ]]
+  # We are not providing docker binaries
+  # We will install Docker from Ubuntu/Red Hat repositories.
+  # Docker version: 18.03.1
   then
-    # Separate out the filename and path
-    nfs_mount=$(dirname ${package_location:4})
-    package_file="${sourcedir}/$(basename ${package_location})"
-    # Mount
-    sudo mount.nfs $nfs_mount $sourcedir
-  elif [[ "${package_location:0:4}" == "http" ]]
-  then
-    # Figure out what we should name the file
-    filename="icp-docker.bin"
+    # Ubuntu
+    if [[ "${OSLEVEL}" == "ubuntu" ]]
+    then
+      # Install Docker CE from Ubuntu repositories: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+      # Set up the repository
+      sudo apt-get update
+      sudo apt-get -y install \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            software-properties-common
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      sudo add-apt-repository -y \
+            "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+            $(lsb_release -cs) \
+            stable"
+      # Install Docker CE
+      sudo apt-get update
+      sudo apt-get -y install docker-ce=18.03.1~ce-0~ubuntu
+    # Red Hat
+    else
+      # Install Docker CE from Ubuntu repositories: https://docs.docker.com/install/linux/docker-ce/centos/
+      # Set up the repository
+      sudo yum install -y yum-utils \
+              device-mapper-persistent-data \
+              lvm2
+      sudo yum-config-manager \
+              --add-repo \
+              https://download.docker.com/linux/centos/docker-ce.repo
+      # Install Docker CE
+      sudo yum install -y docker-ce-18.03.1.ce
+    fi
+  else
+    # We are providing the Docker binaries
     mkdir -p ${sourcedir}
-    curl -o ${sourcedir}/${filename} "${package_location#http:}"
-    package_file="${sourcedir}/${filename}"
-  fi
 
-  sudo chmod a+x ${package_file}
-  sudo ${package_file} --install
+    # Decide which protocol to use
+    if [[ "${package_location:0:3}" == "nfs" ]]
+    then
+      # Separate out the filename and path
+      nfs_mount=$(dirname ${package_location:4})
+      package_file="${sourcedir}/$(basename ${package_location})"
+      # Mount
+      if [[ "${OSLEVEL}" == "ubuntu" ]]
+      then
+        sudo apt -y install nfs-common
+      else
+        sudo yum -y install nfs-utils
+      fi
+      sudo mount.nfs $nfs_mount $sourcedir
+    elif [[ "${package_location:0:4}" == "http" ]]
+    then
+      # Figure out what we should name the file
+      filename="icp-docker.bin"
+      mkdir -p ${sourcedir}
+      curl -o ${sourcedir}/${filename} "${package_location#http:}"
+      package_file="${sourcedir}/${filename}"
+    fi
+
+    sudo chmod a+x ${package_file}
+    sudo ${package_file} --install
+
+    if [[ "${package_location:0:3}" == "nfs" ]]
+    then
+      # Unmount NFS docker installer location
+      sudo umount.nfs $sourcedir
+    fi
+  fi
 
   # Make sure our user is added to the docker group if needed
   # Some RHEL based installations may not have docker installed yet.
@@ -120,4 +172,9 @@ EOF
     echo "Direct-lvm mode is already configured."
     exit 0
   fi
+elif [ "${storage_driver}" == "overlay2" ]; then
+  # Create partition for docker local images
+  sudo systemctl stop docker
+  /tmp/terraform_scripts/create-part.sh -p /var/lib/docker -d ${docker_disk}
+  sudo systemctl start docker
 fi
