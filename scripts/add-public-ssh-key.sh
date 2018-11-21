@@ -7,6 +7,7 @@ if [ "$user_public_key" != "None" ] ; then
     touch ${HOME}/.ssh/authorized_keys
   fi
   echo "$user_public_key" >> $HOME/.ssh/authorized_keys
+  chmod 600 $HOME/.ssh/authorized_keys
 
   if [[ $? -ne 0 ]]; then
     echo "FAILED to add public ssh key"
